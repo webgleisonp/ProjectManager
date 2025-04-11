@@ -18,7 +18,7 @@ public class UsuarioTests
         var novaInstanciaUsuarioResult = Usuario.Criar(usuarioId, "Novo usuario", email, senha, senha);
 
         // Assert
-        Assert.NotNull(novaInstanciaUsuarioResult);
+        Assert.NotNull(novaInstanciaUsuarioResult.Value);
         Assert.True(novaInstanciaUsuarioResult.IsSuccess);
     }
 
@@ -34,7 +34,7 @@ public class UsuarioTests
         var novaInstanciaUsuarioResult = Usuario.Criar(usuarioId, "", email, senha, senha);
 
         // Assert
-        Assert.NotNull(novaInstanciaUsuarioResult);
+        Assert.Null(novaInstanciaUsuarioResult.Value);
         Assert.True(novaInstanciaUsuarioResult.IsFailure);
         Assert.Equal(UsuarioErrors.NomeUsuarioNaoPodeSerVazio, novaInstanciaUsuarioResult.Error);
     }
@@ -51,7 +51,7 @@ public class UsuarioTests
         var novaInstanciaUsuarioResult = Usuario.Criar(usuarioId, "Novo usuario", email, senha, senha);
 
         // Assert
-        Assert.NotNull(novaInstanciaUsuarioResult);
+        Assert.Null(novaInstanciaUsuarioResult.Value);
         Assert.True(novaInstanciaUsuarioResult.IsFailure);
         Assert.Equal(EmailErrors.EmailNaoPodeSerVazio, novaInstanciaUsuarioResult.Error);
     }
@@ -68,7 +68,7 @@ public class UsuarioTests
         var novaInstanciaUsuarioResult = Usuario.Criar(usuarioId, "Novo usuario", email, senha, senha);
 
         // Assert
-        Assert.NotNull(novaInstanciaUsuarioResult);
+        Assert.Null(novaInstanciaUsuarioResult.Value);
         Assert.True(novaInstanciaUsuarioResult.IsFailure);
         Assert.Equal(EmailErrors.EmailInvalido, novaInstanciaUsuarioResult.Error);
     }
@@ -85,7 +85,7 @@ public class UsuarioTests
         var novaInstanciaUsuarioResult = Usuario.Criar(usuarioId, "Novo usuario", email, senha, senha);
 
         // Assert
-        Assert.NotNull(novaInstanciaUsuarioResult);
+        Assert.Null(novaInstanciaUsuarioResult.Value);
         Assert.True(novaInstanciaUsuarioResult.IsFailure);
         Assert.Equal(SenhaErrors.SenhaNaoPodeSerVazia, novaInstanciaUsuarioResult.Error);
     }
@@ -102,7 +102,7 @@ public class UsuarioTests
         var novaInstanciaUsuarioResult = Usuario.Criar(usuarioId, "Novo usuario", email, senha, senha);
 
         // Assert
-        Assert.NotNull(novaInstanciaUsuarioResult);
+        Assert.Null(novaInstanciaUsuarioResult.Value);
         Assert.True(novaInstanciaUsuarioResult.IsFailure);
         Assert.Equal(SenhaErrors.SenhaDeveTerTamanhoMinimo, novaInstanciaUsuarioResult.Error);
     }
@@ -119,7 +119,7 @@ public class UsuarioTests
         var novaInstanciaUsuarioResult = Usuario.Criar(usuarioId, "Novo usuario", email, senha, senha);
 
         // Assert
-        Assert.NotNull(novaInstanciaUsuarioResult);
+        Assert.Null(novaInstanciaUsuarioResult.Value);
         Assert.True(novaInstanciaUsuarioResult.IsFailure);
         Assert.Equal(SenhaErrors.SenhaDeveTerUmaLetraMaiuscula, novaInstanciaUsuarioResult.Error);
     }
@@ -136,7 +136,7 @@ public class UsuarioTests
         var novaInstanciaUsuarioResult = Usuario.Criar(usuarioId, "Novo usuario", email, senha, senha);
 
         // Assert
-        Assert.NotNull(novaInstanciaUsuarioResult);
+        Assert.Null(novaInstanciaUsuarioResult.Value);
         Assert.True(novaInstanciaUsuarioResult.IsFailure);
         Assert.Equal(SenhaErrors.SenhaDeveTerUmNumero, novaInstanciaUsuarioResult.Error);
     }
@@ -154,7 +154,7 @@ public class UsuarioTests
         var novaInstanciaUsuarioResult = Usuario.Criar(usuarioId, "Novo usuario", email, senha, confirmarSenha);
 
         // Assert
-        Assert.NotNull(novaInstanciaUsuarioResult);
+        Assert.Null(novaInstanciaUsuarioResult.Value);
         Assert.True(novaInstanciaUsuarioResult.IsFailure);
         Assert.Equal(SenhaErrors.SenhaNaoConfere, novaInstanciaUsuarioResult.Error);
     }

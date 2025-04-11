@@ -1,0 +1,88 @@
+﻿using Project.Manager.Domain.Entities;
+using Project.Manager.Domain.Errors;
+using Project.Manager.Domain.ValueObjects.Identities;
+
+namespace Project.Manager.Domain.Tests.Entities;
+
+public class TarefaTests
+{
+    [Fact]
+    public void Deve_Criar_Instancia_Tarefa_Com_Sucesso()
+    {
+        // Arrange
+        var tarefaId = new TarefaId(Guid.NewGuid());
+        var projetoId = new ProjetoId(Guid.NewGuid());
+        var nome = "Nova Tarefa";
+        var descricao = "Descrição da tarefa";
+        var dataInicio = DateTime.UtcNow;
+        var dataFim = DateTime.UtcNow.AddDays(10);
+
+        // Act
+        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim);
+
+        // Assert
+        Assert.NotNull(novaInstanciaTarefaResult.Value);
+        Assert.True(novaInstanciaTarefaResult.IsSuccess);
+        Assert.Equal(tarefaId, novaInstanciaTarefaResult.Value.Id);
+    }
+
+    [Fact]
+    public void Deve_Retornar_Erro_Quando_Nome_Esta_Vazio()
+    {
+        // Arrange
+        var tarefaId = new TarefaId(Guid.NewGuid());
+        var projetoId = new ProjetoId(Guid.NewGuid());
+        var nome = "";
+        var descricao = "Descrição da tarefa";
+        var dataInicio = DateTime.UtcNow;
+        var dataFim = DateTime.UtcNow.AddDays(10);
+
+        // Act
+        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim);
+
+        // Assert
+        Assert.Null(novaInstanciaTarefaResult.Value);
+        Assert.True(novaInstanciaTarefaResult.IsFailure);
+        Assert.Equal(TarefaErrors.NomeTarefaNaoPodeSerVazio, novaInstanciaTarefaResult.Error);
+    }
+
+    [Fact]
+    public void Deve_Retornar_Erro_Quando_Descricao_Esta_Vazia()
+    {
+        // Arrange
+        var tarefaId = new TarefaId(Guid.NewGuid());
+        var projetoId = new ProjetoId(Guid.NewGuid());
+        var nome = "Nova Tarefa";
+        var descricao = "";
+        var dataInicio = DateTime.UtcNow;
+        var dataFim = DateTime.UtcNow.AddDays(10);
+
+        // Act
+        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim);
+
+        // Assert
+        Assert.Null(novaInstanciaTarefaResult.Value);
+        Assert.True(novaInstanciaTarefaResult.IsFailure);
+        Assert.Equal(TarefaErrors.DescricaoTarefaNaoPodeSerVazia, novaInstanciaTarefaResult.Error);
+    }
+
+    [Fact]
+    public void Deve_Retornar_Error_DataInicio_For_Maior_Ou_Igual_DataFim()
+    {
+        // Arrange
+        var tarefaId = new TarefaId(Guid.NewGuid());
+        var projetoId = new ProjetoId(Guid.NewGuid());
+        var nome = "Nova Tarefa";
+        var descricao = "Descrição da tarefa";
+        var dataInicio = DateTime.UtcNow;
+        var dataFim = dataInicio;
+
+        // Act
+        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim);
+
+        // Assert
+        Assert.Null(novaInstanciaTarefaResult.Value);
+        Assert.True(novaInstanciaTarefaResult.IsFailure);
+        Assert.Equal(TarefaErrors.DataInicioDeveSerMenorQueDataFim, novaInstanciaTarefaResult.Error);
+    }
+}

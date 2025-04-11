@@ -27,6 +27,8 @@ public class Projeto
 
     public virtual Usuario Usuario { get; private set; } = null!;
 
+    public virtual ICollection<Tarefa> Tarefas { get; } = [];
+
     public static Result<Projeto> Criar(ProjetoId id, UsuarioId usuarioId, string nome, string descricao, DateTime dataInicio, DateTime dataFim)
     {
         if (string.IsNullOrWhiteSpace(nome))
@@ -44,5 +46,15 @@ public class Projeto
     public void SetUsuario(Usuario usuario)
     {
         Usuario = usuario;
+    }
+
+    public Result AddTarefa(Tarefa tarefa)
+    {
+        if(Tarefas.Count>20)
+            return Result.Failure(ProjetoErrors.LimiteDeTarefasPorProjeto);
+
+        Tarefas.Add(tarefa);
+
+        return Result.Success();
     }
 }

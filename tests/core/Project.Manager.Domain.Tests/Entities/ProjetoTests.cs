@@ -21,7 +21,7 @@ public class ProjetoTests
         var novaInstanciaProjetoResult = Projeto.Criar(projetoId, usuarioId, nome, descricao, dataInicio, dataFim);
 
         // Assert
-        Assert.NotNull(novaInstanciaProjetoResult);
+        Assert.NotNull(novaInstanciaProjetoResult.Value);
         Assert.True(novaInstanciaProjetoResult.IsSuccess);
     }
 
@@ -40,7 +40,7 @@ public class ProjetoTests
         var novaInstanciaProjetoResult = Projeto.Criar(projetoId, usuarioId, nome, descricao, dataInicio, dataFim);
 
         // Assert
-        Assert.NotNull(novaInstanciaProjetoResult);
+        Assert.Null(novaInstanciaProjetoResult.Value);
         Assert.True(novaInstanciaProjetoResult.IsFailure);
         Assert.Equal(ProjetoErrors.NomeProjetoNaoPodeSerVazio, novaInstanciaProjetoResult.Error);
     }
@@ -60,7 +60,7 @@ public class ProjetoTests
         var novaInstanciaProjetoResult = Projeto.Criar(projetoId, usuarioId, nome, descricao, dataInicio, dataFim);
 
         // Assert
-        Assert.NotNull(novaInstanciaProjetoResult);
+        Assert.Null(novaInstanciaProjetoResult.Value);
         Assert.True(novaInstanciaProjetoResult.IsFailure);
         Assert.Equal(ProjetoErrors.DescricaoProjetoNaoPodeSerVazia, novaInstanciaProjetoResult.Error);
     }
@@ -80,7 +80,7 @@ public class ProjetoTests
         var novaInstanciaProjetoResult = Projeto.Criar(projetoId, usuarioId, nome, descricao, dataInicio, dataFim);
 
         // Assert
-        Assert.NotNull(novaInstanciaProjetoResult);
+        Assert.Null(novaInstanciaProjetoResult.Value);
         Assert.True(novaInstanciaProjetoResult.IsFailure);
         Assert.Equal(ProjetoErrors.DataInicioDeveSerMenorQueDataFim, novaInstanciaProjetoResult.Error);
     }
