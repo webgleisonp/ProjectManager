@@ -8,4 +8,5 @@ public static class ProjetoErrors
     public static Error DataInicioDeveSerMenorQueDataFim = new("Projeto.NomeProjetoNaoPodeSerVazio", "O campo Data Inicio não pode ser maior ou igual ao campo Data Fim.");
     public static Error NaoExistemProjetosCadastradosParaUsuarioInformado = new("Projeto.NaoExistemProjetosCadastradosParaUsuarioInformado", "Não existem projetos cadastrados para o usuário informado.");
     public static Error LimiteDeTarefasPorProjeto = new("Projeto.LimiteDeTarefasPorProjeto", "O projeto já possui 20 tarefas incluídas.");
+    public static Error ProjetoNaoPodeSerNulo = new("Projeto.ProjetoNaoPodeSerNulo", "O projeto não pode ser nulo.");
 }

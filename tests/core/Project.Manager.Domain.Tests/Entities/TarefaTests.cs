@@ -1,5 +1,6 @@
 ﻿using Project.Manager.Domain.Entities;
 using Project.Manager.Domain.Errors;
+using Project.Manager.Domain.ValueObjects.Enums;
 using Project.Manager.Domain.ValueObjects.Identities;
 
 namespace Project.Manager.Domain.Tests.Entities;
@@ -16,9 +17,11 @@ public class TarefaTests
         var descricao = "Descrição da tarefa";
         var dataInicio = DateTime.UtcNow;
         var dataFim = DateTime.UtcNow.AddDays(10);
+        var status = StatusTarefa.Pendente;
+        var prioridade = PrioridadeTarefa.Baixa;
 
         // Act
-        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim);
+        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim, status, prioridade);
 
         // Assert
         Assert.NotNull(novaInstanciaTarefaResult.Value);
@@ -36,9 +39,11 @@ public class TarefaTests
         var descricao = "Descrição da tarefa";
         var dataInicio = DateTime.UtcNow;
         var dataFim = DateTime.UtcNow.AddDays(10);
+        var status = StatusTarefa.Pendente;
+        var prioridade = PrioridadeTarefa.Baixa;
 
         // Act
-        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim);
+        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim, status, prioridade);
 
         // Assert
         Assert.Null(novaInstanciaTarefaResult.Value);
@@ -56,9 +61,11 @@ public class TarefaTests
         var descricao = "";
         var dataInicio = DateTime.UtcNow;
         var dataFim = DateTime.UtcNow.AddDays(10);
+        var status = StatusTarefa.Pendente;
+        var prioridade = PrioridadeTarefa.Baixa;
 
         // Act
-        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim);
+        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim, status, prioridade);
 
         // Assert
         Assert.Null(novaInstanciaTarefaResult.Value);
@@ -76,9 +83,11 @@ public class TarefaTests
         var descricao = "Descrição da tarefa";
         var dataInicio = DateTime.UtcNow;
         var dataFim = dataInicio;
+        var status = StatusTarefa.Pendente;
+        var prioridade = PrioridadeTarefa.Baixa;
 
         // Act
-        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim);
+        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim, status, prioridade);
 
         // Assert
         Assert.Null(novaInstanciaTarefaResult.Value);

@@ -4,7 +4,7 @@ using Project.Manager.Domain.ValueObjects;
 using Project.Manager.Domain.ValueObjects.Identities;
 
 namespace Project.Manager.Domain.Entities;
-public sealed class Usuario : AgregateRoot<UsuarioId>
+public class Usuario : AgregateRoot<UsuarioId>
 {
     private Usuario(UsuarioId id, string nome, Email email, Senha senha, bool ativo)
         : base(id)
@@ -19,6 +19,8 @@ public sealed class Usuario : AgregateRoot<UsuarioId>
     public Email Email { get; init; } = null!;
     public Senha Senha { get; init; } = null!;
     public bool Ativo { get; init; }
+
+    public virtual ICollection<Projeto> Projetos { get; } = [];
 
     public static Result<Usuario> Criar(UsuarioId id, string nome, string email, string senha, string confirmarSenha)
     {

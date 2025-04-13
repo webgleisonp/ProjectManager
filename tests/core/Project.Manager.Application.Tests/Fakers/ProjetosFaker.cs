@@ -6,16 +6,16 @@ namespace Project.Manager.Application.Tests.Fakers;
 
 public static class ProjetosFaker
 {
-    public static Faker<Projeto> GerarProjetosFakes(Guid usuarioId)
+    public static Faker<Projeto> GerarProjetosFakes(ProjetoId projetoId)
     {
         return new Faker<Projeto>("pt_BR")
             .CustomInstantiator(f =>
             {
-                var usuario = UsuarioFaker.GerarUsuarioFake(usuarioId).Generate();
+                var usuario = UsuarioFaker.GerarUsuarioFake(f.Random.Guid()).Generate();
 
                 var projetoResult = Projeto.Criar(
-                    new ProjetoId(f.Random.Guid()),
-                    usuario.Id, // usa o UsuarioId da entidade
+                    projetoId,
+                    usuario.Id,
                     f.Lorem.Sentence(),
                     f.Lorem.Paragraph(),
                     f.Date.Past(1),
@@ -31,26 +31,30 @@ public static class ProjetosFaker
                 return projeto;
             });
     }
-}
 
-public static class TarefasFaker
-{
-    public static Faker<Tarefa> GerarTarefasFakes(Guid projetoId)
+    public static Faker<Projeto> GerarProjetosFakes(Guid usuarioId)
     {
-        return new Faker<Tarefa>("pt_BR")
+        return new Faker<Projeto>("pt_BR")
             .CustomInstantiator(f =>
             {
-                var tarefaResult = Tarefa.Criar(
-                    new TarefaId(f.Random.Guid()),
-                    new ProjetoId(projetoId),
+                var usuario = UsuarioFaker.GerarUsuarioFake(usuarioId).Generate();
+
+                var projetoResult = Projeto.Criar(
+                    new ProjetoId(f.Random.Guid()),
+                    usuario.Id,
                     f.Lorem.Sentence(),
                     f.Lorem.Paragraph(),
                     f.Date.Past(1),
                     f.Date.Future(1)
                 );
-                if (tarefaResult.IsFailure)
-                    throw new InvalidOperationException("Erro ao criar tarefa fake.");
-                return tarefaResult.Value;
+
+                if (projetoResult.IsFailure)
+                    throw new InvalidOperationException("Erro ao criar projeto fake.");
+
+                var projeto = projetoResult.Value;
+                projeto.SetUsuario(usuario);
+
+                return projeto;
             });
     }
 }

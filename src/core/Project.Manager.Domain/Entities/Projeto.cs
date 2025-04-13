@@ -43,9 +43,14 @@ public class Projeto
         return new Projeto(id, usuarioId, nome, descricao, dataInicio, dataFim, true)!;
     }
 
-    public void SetUsuario(Usuario usuario)
+    public Result SetUsuario(Usuario usuario)
     {
+        if (usuario is null)
+            return Result.Failure(UsuarioErrors.UsuarioNaoPodeSerNulo);
+
         Usuario = usuario;
+
+        return Result.Success();
     }
 
     public Result AddTarefa(Tarefa tarefa)

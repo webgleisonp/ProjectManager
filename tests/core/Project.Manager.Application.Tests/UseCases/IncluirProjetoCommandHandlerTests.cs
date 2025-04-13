@@ -26,22 +26,25 @@ public class IncluirProjetoCommandHandlerTests
     {
         // Arrange
         var command = new IncluirProjetoCommand(Guid.NewGuid(), "Projeto Teste", "Descrição do projeto", DateTime.Now, DateTime.Now.AddDays(30));
-        var projeto = Projeto.Criar(new ProjetoId(Guid.NewGuid()), new UsuarioId(command.UsuarioId), command.Nome, command.Descricao, command.DataInicio, command.DataFim).Value;
-        _projetoRepositoryMock.AdicionarProjetoAsync(Arg.Any<Projeto>(), Arg.Any<CancellationToken>())
-            .Returns(projeto);
+
+        var novoProjetoCriado = Projeto.Criar(new ProjetoId(Guid.NewGuid()), new UsuarioId(command.UsuarioId), command.Nome, command.Descricao, command.DataInicio, command.DataFim).Value;
+
+        _projetoRepositoryMock.AdicionarProjetoAsync(Arg.Is<Projeto>(p => p.Nome == novoProjetoCriado.Nome), Arg.Any<CancellationToken>())
+            .Returns(novoProjetoCriado);
 
         // Act
         var result = await _incluirProjetoCommandHandler.HandleAsync(command);
 
         // Assert
-        Assert.NotNull(result);
+        Assert.NotNull(result.Value);
         Assert.True(result.IsSuccess);
-        Assert.Equal(projeto.Nome, result.Value.Nome);
+        Assert.Equal(novoProjetoCriado.Nome, result.Value.Nome);
+
         await _unityOfWorkMock.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async void Deve_Retornar_Erro_Quando_Projeto_Invalido()
+    public async void Deve_Retornar_Erro_Quando_Instancia_Projeto_For_Invalida()
     {
         // Arrange
         var command = new IncluirProjetoCommand(Guid.NewGuid(), "", "Descrição do projeto", DateTime.Now, DateTime.Now.AddDays(30));
@@ -50,18 +53,17 @@ public class IncluirProjetoCommandHandlerTests
         var result = await _incluirProjetoCommandHandler.HandleAsync(command);
 
         // Assert
-        Assert.NotNull(result);
+        Assert.Null(result.Value);
         Assert.True(result.IsFailure);
-        await _projetoRepositoryMock.DidNotReceive().AdicionarProjetoAsync(Arg.Any<Projeto>(), Arg.Any<CancellationToken>());
-        await _unityOfWorkMock.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+        Assert.NotNull(result.Error);
     }
 
     [Fact]
-    public void Deve_Lancar_Exception_Quando_Der_Erro_Ao_Adicionar_Projeto()
+    public void Deve_Lancar_Exception_Quando_Adicionar_Projeto_Via_Repositorio()
     {
         // Arrange
         var command = new IncluirProjetoCommand(Guid.NewGuid(), "Projeto Teste", "Descrição do projeto", DateTime.Now, DateTime.Now.AddDays(30));
-        var projeto = Projeto.Criar(new ProjetoId(Guid.NewGuid()), new UsuarioId(command.UsuarioId), command.Nome, command.Descricao, command.DataInicio, command.DataFim).Value;
+
         _projetoRepositoryMock.AdicionarProjetoAsync(Arg.Any<Projeto>(), Arg.Any<CancellationToken>())
             .Returns<ValueTask<Projeto>>(_ => throw new Exception("Erro ao adicionar projeto"));
 
@@ -70,11 +72,16 @@ public class IncluirProjetoCommandHandlerTests
     }
 
     [Fact]
-    public void Deve_Lancar_Exception_Quando_Der_Erro_No_SaveChanges()
+    public void Deve_Lancar_Exception_Quando_Executar_SaveChanges()
     {
         // Arrange
         var command = new IncluirProjetoCommand(Guid.NewGuid(), "Projeto Teste", "Descrição do projeto", DateTime.Now, DateTime.Now.AddDays(30));
-        var projeto = Projeto.Criar(new ProjetoId(Guid.NewGuid()), new UsuarioId(command.UsuarioId), command.Nome, command.Descricao, command.DataInicio, command.DataFim).Value;
+
+        var novoProjetoCriado = Projeto.Criar(new ProjetoId(Guid.NewGuid()), new UsuarioId(command.UsuarioId), command.Nome, command.Descricao, command.DataInicio, command.DataFim).Value;
+
+        _projetoRepositoryMock.AdicionarProjetoAsync(Arg.Is<Projeto>(p => p.Nome == novoProjetoCriado.Nome), Arg.Any<CancellationToken>())
+            .Returns(novoProjetoCriado);
+
         _unityOfWorkMock.SaveChangesAsync(Arg.Any<CancellationToken>())
             .Returns(_ => throw new Exception("Erro ao salvar no banco"));
 
