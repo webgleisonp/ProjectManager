@@ -23,6 +23,23 @@ public class UsuarioTests
     }
 
     [Fact]
+    public void Deve_Retornar_Erro_Quando_Id_Esta_Vazio()
+    {
+        // Arrange
+        var usuarioId = new UsuarioId(Guid.Empty);
+        var email = "teste@gmail.com";
+        var senha = "Senha123";
+
+        // Act
+        var novaInstanciaUsuarioResult = Usuario.Criar(usuarioId, "", email, senha, senha);
+
+        // Assert
+        Assert.Null(novaInstanciaUsuarioResult.Value);
+        Assert.True(novaInstanciaUsuarioResult.IsFailure);
+        Assert.Equal(UsuarioErrors.IdUsuarioNaoPodeSerVazio, novaInstanciaUsuarioResult.Error);
+    }
+
+    [Fact]
     public void Deve_Retornar_Erro_Quando_Nome_Esta_Vazio()
     {
         // Arrange

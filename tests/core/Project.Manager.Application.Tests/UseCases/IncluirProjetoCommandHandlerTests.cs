@@ -1,9 +1,9 @@
 ﻿using NSubstitute;
 using Project.Manager.Application.Abstractions;
+using Project.Manager.Application.Extensions;
 using Project.Manager.Application.UseCases.Projetos;
 using Project.Manager.Domain.Abstractions.Repositories;
 using Project.Manager.Domain.Entities;
-using Project.Manager.Domain.ValueObjects.Identities;
 
 namespace Project.Manager.Application.Tests.UseCases;
 
@@ -25,9 +25,12 @@ public class IncluirProjetoCommandHandlerTests
     public async void Deve_Incluir_Projeto_Com_Sucesso()
     {
         // Arrange
-        var command = new IncluirProjetoCommand(Guid.NewGuid(), "Projeto Teste", "Descrição do projeto", DateTime.Now, DateTime.Now.AddDays(30));
+        var id = Guid.NewGuid();
+        var usuarioId = Guid.NewGuid();
 
-        var novoProjetoCriado = Projeto.Criar(new ProjetoId(Guid.NewGuid()), new UsuarioId(command.UsuarioId), command.Nome, command.Descricao, command.DataInicio, command.DataFim).Value;
+        var command = new IncluirProjetoCommand(usuarioId, "Projeto Teste", "Descrição do projeto", DateTime.Now, DateTime.Now.AddDays(30));
+
+        var novoProjetoCriado = Projeto.Criar(id.ToProjetoId(), command.UsuarioId.ToUsuarioId(), command.Nome, command.Descricao, command.DataInicio, command.DataFim).Value;
 
         _projetoRepositoryMock.AdicionarProjetoAsync(Arg.Is<Projeto>(p => p.Nome == novoProjetoCriado.Nome), Arg.Any<CancellationToken>())
             .Returns(novoProjetoCriado);
@@ -47,7 +50,9 @@ public class IncluirProjetoCommandHandlerTests
     public async void Deve_Retornar_Erro_Quando_Instancia_Projeto_For_Invalida()
     {
         // Arrange
-        var command = new IncluirProjetoCommand(Guid.NewGuid(), "", "Descrição do projeto", DateTime.Now, DateTime.Now.AddDays(30));
+        var id = Guid.NewGuid();
+
+        var command = new IncluirProjetoCommand(id, "", "Descrição do projeto", DateTime.Now, DateTime.Now.AddDays(30));
 
         // Act
         var result = await _incluirProjetoCommandHandler.HandleAsync(command);
@@ -62,7 +67,9 @@ public class IncluirProjetoCommandHandlerTests
     public void Deve_Lancar_Exception_Quando_Adicionar_Projeto_Via_Repositorio()
     {
         // Arrange
-        var command = new IncluirProjetoCommand(Guid.NewGuid(), "Projeto Teste", "Descrição do projeto", DateTime.Now, DateTime.Now.AddDays(30));
+        var id = Guid.NewGuid();
+
+        var command = new IncluirProjetoCommand(id, "Projeto Teste", "Descrição do projeto", DateTime.Now, DateTime.Now.AddDays(30));
 
         _projetoRepositoryMock.AdicionarProjetoAsync(Arg.Any<Projeto>(), Arg.Any<CancellationToken>())
             .Returns<ValueTask<Projeto>>(_ => throw new Exception("Erro ao adicionar projeto"));
@@ -75,11 +82,13 @@ public class IncluirProjetoCommandHandlerTests
     public void Deve_Lancar_Exception_Quando_Executar_SaveChanges()
     {
         // Arrange
-        var command = new IncluirProjetoCommand(Guid.NewGuid(), "Projeto Teste", "Descrição do projeto", DateTime.Now, DateTime.Now.AddDays(30));
+        var id = Guid.NewGuid();
 
-        var novoProjetoCriado = Projeto.Criar(new ProjetoId(Guid.NewGuid()), new UsuarioId(command.UsuarioId), command.Nome, command.Descricao, command.DataInicio, command.DataFim).Value;
+        var command = new IncluirProjetoCommand(id, "Projeto Teste", "Descrição do projeto", DateTime.Now, DateTime.Now.AddDays(30));
 
-        _projetoRepositoryMock.AdicionarProjetoAsync(Arg.Is<Projeto>(p => p.Nome == novoProjetoCriado.Nome), Arg.Any<CancellationToken>())
+        var novoProjetoCriado = Projeto.Criar(id.ToProjetoId(), command.UsuarioId.ToUsuarioId(), command.Nome, command.Descricao, command.DataInicio, command.DataFim).Value;
+
+        _projetoRepositoryMock.AdicionarProjetoAsync(Arg.Is<Projeto>(p => p.Id == novoProjetoCriado.Id), Arg.Any<CancellationToken>())
             .Returns(novoProjetoCriado);
 
         _unityOfWorkMock.SaveChangesAsync(Arg.Any<CancellationToken>())

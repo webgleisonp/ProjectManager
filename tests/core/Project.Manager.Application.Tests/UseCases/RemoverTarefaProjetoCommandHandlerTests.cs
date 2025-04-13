@@ -1,6 +1,7 @@
 ﻿using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using Project.Manager.Application.Abstractions;
+using Project.Manager.Application.Extensions;
 using Project.Manager.Application.UseCases.Tarefas;
 using Project.Manager.Domain.Abstractions.Repositories;
 using Project.Manager.Domain.Entities;
@@ -28,20 +29,21 @@ public class RemoverTarefaProjetoCommandHandlerTests
     public async void Deve_Remover_Tarefa_Com_Sucesso()
     {
         // Arrange
-        var command = new RemoverTarefaProjetoCommand(Guid.NewGuid());
+        var id = Guid.NewGuid();
+        var projetoId = Guid.NewGuid();
 
-        var tarefaId = new TarefaId(command.TarefaId);
+        var command = new RemoverTarefaProjetoCommand(id);
 
-        var tarefa = Tarefa.Criar(tarefaId, 
-            new ProjetoId(Guid.NewGuid()), 
-            "Tarefa Teste", 
-            "Descrição da Tarefa Teste", 
-            DateTime.UtcNow, 
-            DateTime.UtcNow.AddDays(5), 
+        var tarefa = Tarefa.Criar(id.ToTarefaId(),
+            projetoId.ToProjetoId(),
+            "Tarefa Teste",
+            "Descrição da Tarefa Teste",
+            DateTime.UtcNow,
+            DateTime.UtcNow.AddDays(5),
             StatusTarefa.Pendente,
             PrioridadeTarefa.Baixa).Value;
 
-        _tarefaRepositoryMock.RetornarTarefaAsync(Arg.Is<TarefaId>(t => t == tarefaId), Arg.Any<CancellationToken>())
+        _tarefaRepositoryMock.RetornarTarefaAsync(Arg.Is<TarefaId>(t => t == id.ToTarefaId()), Arg.Any<CancellationToken>())
             .Returns(tarefa);
 
         // Act
@@ -50,7 +52,7 @@ public class RemoverTarefaProjetoCommandHandlerTests
         // Assert
         Assert.True(result.IsSuccess);
 
-        await _tarefaRepositoryMock.Received(1).RemoverTarefaProjetoAsync(Arg.Is<Tarefa>(t => t.Id == tarefaId), Arg.Any<CancellationToken>());
+        await _tarefaRepositoryMock.Received(1).RemoverTarefaProjetoAsync(Arg.Is<Tarefa>(t => t.Id == id.ToTarefaId()), Arg.Any<CancellationToken>());
         await _unityOfWorkMock.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
@@ -58,9 +60,11 @@ public class RemoverTarefaProjetoCommandHandlerTests
     public async void Deve_Retornar_Erro_Quando_Tarefa_Nao_Encontrada()
     {
         // Arrange
-        var command = new RemoverTarefaProjetoCommand(Guid.NewGuid());
+        var id = Guid.NewGuid();
 
-        _tarefaRepositoryMock.RetornarTarefaAsync(Arg.Any<TarefaId>(), Arg.Any<CancellationToken>())
+        var command = new RemoverTarefaProjetoCommand(id);
+
+        _tarefaRepositoryMock.RetornarTarefaAsync(Arg.Is<TarefaId>(t => t == id.ToTarefaId()), Arg.Any<CancellationToken>())
             .ReturnsNull();
 
         // Act
@@ -75,19 +79,21 @@ public class RemoverTarefaProjetoCommandHandlerTests
     public void Deve_Lancar_Exception_Quando_Remover_Tarefa_Via_Repositorio()
     {
         // Arrange
-        var command = new RemoverTarefaProjetoCommand(Guid.NewGuid());
-        
-        var tarefaId = new TarefaId(command.TarefaId);
-        var tarefa = Tarefa.Criar(tarefaId, 
-            new ProjetoId(Guid.NewGuid()), 
-            "Tarefa Teste", 
-            "Descrição da Tarefa Teste", 
-            DateTime.UtcNow, 
-            DateTime.UtcNow.AddDays(5), 
+        var id = Guid.NewGuid();
+        var projetoId = Guid.NewGuid();
+
+        var command = new RemoverTarefaProjetoCommand(id);
+
+        var tarefa = Tarefa.Criar(id.ToTarefaId(),
+            projetoId.ToProjetoId(),
+            "Tarefa Teste",
+            "Descrição da Tarefa Teste",
+            DateTime.UtcNow,
+            DateTime.UtcNow.AddDays(5),
             StatusTarefa.Pendente,
             PrioridadeTarefa.Baixa).Value;
-        
-        _tarefaRepositoryMock.RetornarTarefaAsync(Arg.Is<TarefaId>(t => t == tarefaId), Arg.Any<CancellationToken>())
+
+        _tarefaRepositoryMock.RetornarTarefaAsync(Arg.Is<TarefaId>(t => t == id.ToTarefaId()), Arg.Any<CancellationToken>())
             .Returns(tarefa);
 
         _tarefaRepositoryMock.RemoverTarefaProjetoAsync(Arg.Any<Tarefa>(), Arg.Any<CancellationToken>())
@@ -104,24 +110,26 @@ public class RemoverTarefaProjetoCommandHandlerTests
     public void Deve_Lancar_Exception_Quando_Executar_SaveChanges()
     {
         // Arrange
+        var id = Guid.NewGuid();
+        var projetoId = Guid.NewGuid();
+
         var command = new RemoverTarefaProjetoCommand(Guid.NewGuid());
-        
-        var tarefaId = new TarefaId(command.TarefaId);
-        var tarefa = Tarefa.Criar(tarefaId, 
-            new ProjetoId(Guid.NewGuid()), 
-            "Tarefa Teste", 
-            "Descrição da Tarefa Teste", 
-            DateTime.UtcNow, 
-            DateTime.UtcNow.AddDays(5), 
-            StatusTarefa.Pendente, 
+
+        var tarefa = Tarefa.Criar(id.ToTarefaId(),
+            projetoId.ToProjetoId(),
+            "Tarefa Teste",
+            "Descrição da Tarefa Teste",
+            DateTime.UtcNow,
+            DateTime.UtcNow.AddDays(5),
+            StatusTarefa.Pendente,
             PrioridadeTarefa.Baixa).Value;
-        
-        _tarefaRepositoryMock.RetornarTarefaAsync(Arg.Is<TarefaId>(t => t == tarefaId), Arg.Any<CancellationToken>())
+
+        _tarefaRepositoryMock.RetornarTarefaAsync(Arg.Is<TarefaId>(t => t == id.ToTarefaId()), Arg.Any<CancellationToken>())
             .Returns(tarefa);
-        
+
         _unityOfWorkMock.SaveChangesAsync(Arg.Any<CancellationToken>())
             .Returns(_ => throw new Exception("Falha ao salvar mudanças"));
-        
+
         // Act & Assert
         Assert.ThrowsAsync<Exception>(async () => await _removerTarefaProjetoCommandHandler.HandleAsync(command));
     }

@@ -1,4 +1,5 @@
 ﻿using NSubstitute;
+using Project.Manager.Application.Extensions;
 using Project.Manager.Application.Tests.Fakers;
 using Project.Manager.Application.UseCases.Projetos;
 using Project.Manager.Domain.Abstractions.Repositories;
@@ -22,11 +23,11 @@ public class RetornarProjetosUsuarioQueryHandlerTests
     public async void Deve_Retornar_Projetos_Usuario_Com_Sucesso()
     {
         // Arrange
+        var projetos = ProjetosFaker.GerarProjetosFakes().Generate(5);
         var usuarioId = Guid.NewGuid();
         var query = new RetornarProjetosUsuarioQuery(usuarioId);
-        var projetos = ProjetosFaker.GerarProjetosFakes(usuarioId).Generate(5);
 
-        _projetoRepositoryMock.RetornarProjetosUsuarioAsync(Arg.Is<UsuarioId>(id => id == new UsuarioId(usuarioId)), Arg.Any<CancellationToken>())
+        _projetoRepositoryMock.RetornarProjetosUsuarioAsync(Arg.Is<UsuarioId>(id => id == usuarioId.ToUsuarioId()), Arg.Any<CancellationToken>())
             .Returns(projetos);
 
         // Act
@@ -44,7 +45,7 @@ public class RetornarProjetosUsuarioQueryHandlerTests
         // Arrange
         var usuarioId = Guid.NewGuid();
         var query = new RetornarProjetosUsuarioQuery(usuarioId);
-        _projetoRepositoryMock.RetornarProjetosUsuarioAsync(Arg.Is<UsuarioId>(id => id == new UsuarioId(usuarioId)), Arg.Any<CancellationToken>())
+        _projetoRepositoryMock.RetornarProjetosUsuarioAsync(Arg.Is<UsuarioId>(id => id == usuarioId.ToUsuarioId()), Arg.Any<CancellationToken>())
             .Returns([]);
 
         // Act

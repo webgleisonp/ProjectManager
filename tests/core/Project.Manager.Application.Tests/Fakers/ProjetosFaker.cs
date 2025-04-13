@@ -1,20 +1,20 @@
 ﻿using Bogus;
+using Project.Manager.Application.Extensions;
 using Project.Manager.Domain.Entities;
-using Project.Manager.Domain.ValueObjects.Identities;
 
 namespace Project.Manager.Application.Tests.Fakers;
 
 public static class ProjetosFaker
 {
-    public static Faker<Projeto> GerarProjetosFakes(ProjetoId projetoId)
+    public static Faker<Projeto> GerarProjetosFakes()
     {
         return new Faker<Projeto>("pt_BR")
             .CustomInstantiator(f =>
             {
+                var id = f.Random.Guid();
                 var usuario = UsuarioFaker.GerarUsuarioFake(f.Random.Guid()).Generate();
 
-                var projetoResult = Projeto.Criar(
-                    projetoId,
+                var projetoResult = Projeto.Criar(id.ToProjetoId(),
                     usuario.Id,
                     f.Lorem.Sentence(),
                     f.Lorem.Paragraph(),
@@ -37,10 +37,10 @@ public static class ProjetosFaker
         return new Faker<Projeto>("pt_BR")
             .CustomInstantiator(f =>
             {
+                var id = f.Random.Guid();
                 var usuario = UsuarioFaker.GerarUsuarioFake(usuarioId).Generate();
 
-                var projetoResult = Projeto.Criar(
-                    new ProjetoId(f.Random.Guid()),
+                var projetoResult = Projeto.Criar(id.ToProjetoId(),
                     usuario.Id,
                     f.Lorem.Sentence(),
                     f.Lorem.Paragraph(),

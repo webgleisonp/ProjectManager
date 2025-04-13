@@ -1,5 +1,6 @@
 ﻿using NSubstitute;
 using Project.Manager.Application.Abstractions;
+using Project.Manager.Application.Extensions;
 using Project.Manager.Application.UseCases.Usuarios;
 using Project.Manager.Domain.Abstractions.Repositories;
 using Project.Manager.Domain.Entities;
@@ -25,9 +26,11 @@ public class IncluirUsuarioCommandHandlerTests
     public async void Deve_Incluir_Usuario_Com_Sucesso()
     {
         // Arrange
+        var id = Guid.NewGuid();
+
         var command = new IncluirUsuarioCommand("João", "joao@email.com", "Senha123", "Senha123");
 
-        var novoUsuarioCriado = Usuario.Criar(new UsuarioId(Guid.NewGuid()), command.Nome, command.Email, command.Senha, command.ConfirmarSenha).Value;
+        var novoUsuarioCriado = Usuario.Criar(id.ToUsuarioId(), command.Nome, command.Email, command.Senha, command.ConfirmarSenha).Value;
 
         _usuarioRepositoryMock.AdicionarUsuarioAsync(Arg.Is<Usuario>(u => u.Nome == novoUsuarioCriado.Nome), Arg.Any<CancellationToken>())
             .Returns(novoUsuarioCriado);
@@ -75,9 +78,11 @@ public class IncluirUsuarioCommandHandlerTests
     public void Deve_Lancar_Exception_Quando_Executar_SaveChanges()
     {
         // Arrange
+        var id = Guid.NewGuid();
+
         var command = new IncluirUsuarioCommand("João", "joao@email.com", "Senha123", "Senha123");
 
-        var novoUsuarioCriado = Usuario.Criar(new UsuarioId(Guid.NewGuid()), command.Nome, command.Email, command.Senha, command.ConfirmarSenha).Value;
+        var novoUsuarioCriado = Usuario.Criar(id.ToUsuarioId(), command.Nome, command.Email, command.Senha, command.ConfirmarSenha).Value;
 
         _usuarioRepositoryMock.AdicionarUsuarioAsync(Arg.Is<Usuario>(u => u.Nome == novoUsuarioCriado.Nome), Arg.Any<CancellationToken>())
             .Returns(novoUsuarioCriado);

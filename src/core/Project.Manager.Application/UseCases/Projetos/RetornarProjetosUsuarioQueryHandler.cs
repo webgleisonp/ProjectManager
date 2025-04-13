@@ -3,7 +3,6 @@ using Project.Manager.Application.Extensions;
 using Project.Manager.Domain.Abstractions.Repositories;
 using Project.Manager.Domain.Errors;
 using Project.Manager.Domain.Shared;
-using Project.Manager.Domain.ValueObjects.Identities;
 
 namespace Project.Manager.Application.UseCases.Projetos;
 
@@ -11,9 +10,7 @@ internal sealed class RetornarProjetosUsuarioQueryHandler(IProjetoRepository pro
 {
     public async ValueTask<Result<IEnumerable<RetornarProjetosUsuarioResponse>>> HandleAsync(RetornarProjetosUsuarioQuery query, CancellationToken cancellationToken = default)
     {
-        var usuarioId = new UsuarioId(query.UsuarioId);
-
-        var projetos = await projetoRepository.RetornarProjetosUsuarioAsync(usuarioId, cancellationToken);
+        var projetos = await projetoRepository.RetornarProjetosUsuarioAsync(query.UsuarioId.ToUsuarioId(), cancellationToken);
 
         if (!projetos.Any())
             return Result.Failure<IEnumerable<RetornarProjetosUsuarioResponse>>(ProjetoErrors.NaoExistemProjetosCadastradosParaUsuarioInformado);

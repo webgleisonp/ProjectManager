@@ -26,16 +26,14 @@ public class RetornarTarefasProjetoQueryHandlerTests
     public async void Deve_Retornar_Tarefas_Projeto_Com_Sucesso()
     {
         // Arrange
-        var usuarioId = Guid.NewGuid();
-        var projetoId = Guid.NewGuid();
-        var query = new RetornarTarefasProjetoQuery(projetoId);
-        var projeto = ProjetosFaker.GerarProjetosFakes(usuarioId).Generate();
-        var tarefas = TarefasFaker.GerarTarefasFakes(projetoId).Generate(20);
+        var projeto = ProjetosFaker.GerarProjetosFakes().Generate();
+        var query = new RetornarTarefasProjetoQuery(projeto.Id.Value);
+        var tarefas = TarefasFaker.GerarTarefasFakes(projeto.Id.Value).Generate(20);
 
-        _projetoRepositoryMock.RetornarProjetoAsync(Arg.Is<ProjetoId>(id => id == new ProjetoId(projetoId)), Arg.Any<CancellationToken>())
+        _projetoRepositoryMock.RetornarProjetoAsync(Arg.Is<ProjetoId>(id => id == projeto.Id), Arg.Any<CancellationToken>())
             .Returns(projeto);
 
-        _tarefaRepositoryMock.RetornaTarefasPorProjetoAsync(Arg.Is<ProjetoId>(id => id == new ProjetoId(projetoId)), Arg.Any<CancellationToken>())
+        _tarefaRepositoryMock.RetornaTarefasPorProjetoAsync(Arg.Is<ProjetoId>(id => id == projeto.Id), Arg.Any<CancellationToken>())
             .Returns(tarefas);
 
         // Act
@@ -51,11 +49,10 @@ public class RetornarTarefasProjetoQueryHandlerTests
     public async void Deve_Retornar_Erro_Quando_Projeto_Nao_Encontrado()
     {
         // Arrange
-        var usuarioId = Guid.NewGuid();
-        var projetoId = Guid.NewGuid();
-        var query = new RetornarTarefasProjetoQuery(projetoId);
+        var projeto = ProjetosFaker.GerarProjetosFakes().Generate();
+        var query = new RetornarTarefasProjetoQuery(projeto.Id.Value);
 
-        _projetoRepositoryMock.RetornarProjetoAsync(Arg.Is<ProjetoId>(id => id == new ProjetoId(projetoId)), Arg.Any<CancellationToken>())
+        _projetoRepositoryMock.RetornarProjetoAsync(Arg.Is<ProjetoId>(id => id == projeto.Id), Arg.Any<CancellationToken>())
             .ReturnsNull();
 
         // Act
@@ -71,15 +68,14 @@ public class RetornarTarefasProjetoQueryHandlerTests
     public async void Deve_Retornar_Erro_Quando_Tarefas_Nao_Encontradas()
     {
         // Arrange
-        var usuarioId = Guid.NewGuid();
-        var projetoId = Guid.NewGuid();
-        var query = new RetornarTarefasProjetoQuery(projetoId);
-        var projeto = ProjetosFaker.GerarProjetosFakes(usuarioId).Generate();
+        var projeto = ProjetosFaker.GerarProjetosFakes().Generate();
+        var query = new RetornarTarefasProjetoQuery(projeto.Id.Value);
+        var tarefas = TarefasFaker.GerarTarefasFakes(projeto.Id.Value).Generate(20);
 
-        _projetoRepositoryMock.RetornarProjetoAsync(Arg.Is<ProjetoId>(id => id == new ProjetoId(projetoId)), Arg.Any<CancellationToken>())
+        _projetoRepositoryMock.RetornarProjetoAsync(Arg.Is<ProjetoId>(id => id == projeto.Id), Arg.Any<CancellationToken>())
             .Returns(projeto);
 
-        _tarefaRepositoryMock.RetornaTarefasPorProjetoAsync(Arg.Is<ProjetoId>(id => id == new ProjetoId(projetoId)), Arg.Any<CancellationToken>())
+        _tarefaRepositoryMock.RetornaTarefasPorProjetoAsync(Arg.Is<ProjetoId>(id => id == projeto.Id), Arg.Any<CancellationToken>())
             .Returns([]);
 
         // Act

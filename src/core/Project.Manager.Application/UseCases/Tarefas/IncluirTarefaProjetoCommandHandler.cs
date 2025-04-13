@@ -5,7 +5,6 @@ using Project.Manager.Domain.Entities;
 using Project.Manager.Domain.Errors;
 using Project.Manager.Domain.Shared;
 using Project.Manager.Domain.ValueObjects.Enums;
-using Project.Manager.Domain.ValueObjects.Identities;
 
 namespace Project.Manager.Application.UseCases.Tarefas;
 
@@ -13,9 +12,7 @@ internal sealed class IncluirTarefaProjetoCommandHandler(IProjetoRepository proj
 {
     public async ValueTask<Result<IncluirTarefaProjetoResponse>> HandleAsync(IncluirTarefaProjetoCommand command, CancellationToken cancellationToken = default)
     {
-        var projetoId = new ProjetoId(command.ProjetoId);
-
-        var projeto = await projetoRepository.RetornarProjetoAsync(projetoId, cancellationToken);
+        var projeto = await projetoRepository.RetornarProjetoAsync(command.ProjetoId.ToProjetoId(), cancellationToken);
 
         if (projeto is null)
             return Result.Failure<IncluirTarefaProjetoResponse>(ProjetoErrors.ProjetoNaoEncontrado);
@@ -23,7 +20,9 @@ internal sealed class IncluirTarefaProjetoCommandHandler(IProjetoRepository proj
         if (projeto.Tarefas.Count >= 20)
             return Result.Failure<IncluirTarefaProjetoResponse>(ProjetoErrors.LimiteDeTarefasPorProjeto);
 
-        var tarefaResult = Tarefa.Criar(new TarefaId(Guid.NewGuid()), projeto.Id, command.Nome, command.Descricao, command.DataInicio, command.DataFim, StatusTarefa.Pendente, command.Prioridade);
+        var id = Guid.NewGuid();
+
+        var tarefaResult = Tarefa.Criar(id.ToTarefaId(), projeto.Id, command.Nome, command.Descricao, command.DataInicio, command.DataFim, StatusTarefa.Pendente, command.Prioridade);
 
         if (tarefaResult.IsFailure)
             return Result.Failure<IncluirTarefaProjetoResponse>(tarefaResult.Error);

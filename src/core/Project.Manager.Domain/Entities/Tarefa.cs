@@ -32,6 +32,12 @@ public class Tarefa
 
     public static Result<Tarefa> Criar(TarefaId id, ProjetoId projetoId, string nome, string descricao, DateTime dataInicio, DateTime dataFim, StatusTarefa status, PrioridadeTarefa prioridade)
     {
+        if(id.Value == Guid.Empty)
+            return Result.Failure<Tarefa>(TarefaErrors.IdTarefaNaoPodeSerVazio);
+
+        if (projetoId.Value == Guid.Empty)
+            return Result.Failure<Tarefa>(ProjetoErrors.IdProjetoNaoPodeSerVazio);
+
         if (string.IsNullOrWhiteSpace(nome))
             return Result.Failure<Tarefa>(TarefaErrors.NomeTarefaNaoPodeSerVazio);
 

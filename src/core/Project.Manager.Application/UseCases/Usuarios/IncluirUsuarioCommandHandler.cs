@@ -3,7 +3,6 @@ using Project.Manager.Application.Extensions;
 using Project.Manager.Domain.Abstractions.Repositories;
 using Project.Manager.Domain.Entities;
 using Project.Manager.Domain.Shared;
-using Project.Manager.Domain.ValueObjects.Identities;
 
 namespace Project.Manager.Application.UseCases.Usuarios;
 
@@ -11,7 +10,9 @@ internal sealed class IncluirUsuarioCommandHandler(IUsuarioRepository usuarioRep
 {
     public async ValueTask<Result<IncluirUsuarioCommandResponse>> HandleAsync(IncluirUsuarioCommand command, CancellationToken cancellationToken = default)
     {
-        var novoUsuarioResult = Usuario.Criar(new UsuarioId(Guid.NewGuid()),
+        var id =Guid.NewGuid();
+
+        var novoUsuarioResult = Usuario.Criar(id.ToUsuarioId(),
             command.Nome,
             command.Email,
             command.Senha,

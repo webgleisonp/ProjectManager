@@ -1,7 +1,7 @@
 ﻿using Bogus;
+using Project.Manager.Application.Extensions;
 using Project.Manager.Domain.Entities;
 using Project.Manager.Domain.ValueObjects.Enums;
-using Project.Manager.Domain.ValueObjects.Identities;
 
 namespace Project.Manager.Application.Tests.Fakers;
 
@@ -12,15 +12,40 @@ public static class TarefasFaker
         return new Faker<Tarefa>("pt_BR")
             .CustomInstantiator(f =>
             {
-                var tarefaResult = Tarefa.Criar(
-                    new TarefaId(f.Random.Guid()),
-                    new ProjetoId(projetoId),
+                var id = f.Random.Guid();
+
+                var tarefaResult = Tarefa.Criar(id.ToTarefaId(),
+                    projetoId.ToProjetoId(),
                     f.Lorem.Sentence(),
                     f.Lorem.Paragraph(),
                     f.Date.Past(1),
                     f.Date.Future(1),
-                    StatusTarefa.Pendente,
-                    PrioridadeTarefa.Baixa
+                    f.PickRandom<StatusTarefa>(),
+                    f.PickRandom<PrioridadeTarefa>()
+                );
+
+                if (tarefaResult.IsFailure)
+                    throw new InvalidOperationException("Erro ao criar tarefa fake.");
+
+                return tarefaResult.Value;
+            });
+    }
+
+    public static Faker<Tarefa> GerarTarefasStatusFakes(Guid projetoId, StatusTarefa status)
+    {
+        return new Faker<Tarefa>("pt_BR")
+            .CustomInstantiator(f =>
+            {
+                var id = f.Random.Guid();
+
+                var tarefaResult = Tarefa.Criar(id.ToTarefaId(),
+                    projetoId.ToProjetoId(),
+                    f.Lorem.Sentence(),
+                    f.Lorem.Paragraph(),
+                    f.Date.Past(1),
+                    f.Date.Future(1),
+                    status,
+                    f.PickRandom<PrioridadeTarefa>()
                 );
 
                 if (tarefaResult.IsFailure)

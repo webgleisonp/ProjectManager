@@ -4,7 +4,6 @@ using Project.Manager.Domain.Abstractions.Repositories;
 using Project.Manager.Domain.Errors;
 using Project.Manager.Domain.Shared;
 using Project.Manager.Domain.ValueObjects.Enums;
-using Project.Manager.Domain.ValueObjects.Identities;
 
 namespace Project.Manager.Application.UseCases.Tarefas;
 
@@ -14,9 +13,7 @@ internal sealed class AtualizarTarefaProjetoCommandHandler(IProjetoRepository pr
 {
     public async ValueTask<Result<AtualizarTarefaProjetoResponse>> HandleAsync(AtualizarTarefaProjetoCommand command, CancellationToken cancellationToken = default)
     {
-        var projetoId = new ProjetoId(command.ProjetoId);
-
-        var projeto = await projetoRepository.RetornarProjetoAsync(projetoId, cancellationToken);
+        var projeto = await projetoRepository.RetornarProjetoAsync(command.ProjetoId.ToProjetoId(), cancellationToken);
 
         if (projeto is null)
             return Result.Failure<AtualizarTarefaProjetoResponse>(ProjetoErrors.ProjetoNaoEncontrado);
@@ -24,7 +21,7 @@ internal sealed class AtualizarTarefaProjetoCommandHandler(IProjetoRepository pr
         if (projeto.Tarefas.Count >= 20)
             return Result.Failure<AtualizarTarefaProjetoResponse>(ProjetoErrors.LimiteDeTarefasPorProjeto);
 
-        var tarefa = await tarefaRepository.RetornarTarefaAsync(new TarefaId(command.TarefaId), cancellationToken);
+        var tarefa = await tarefaRepository.RetornarTarefaAsync(command.TarefaId.ToTarefaId(), cancellationToken);
 
         if (tarefa is null)
             return Result.Failure<AtualizarTarefaProjetoResponse>(TarefaErrors.TarefaNaoEncontrada);

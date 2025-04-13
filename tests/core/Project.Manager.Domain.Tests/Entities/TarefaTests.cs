@@ -30,6 +30,50 @@ public class TarefaTests
     }
 
     [Fact]
+    public void Deve_Retornar_Erro_Quando_Id_Esta_Vazio()
+    {
+        // Arrange
+        var tarefaId = new TarefaId(Guid.Empty);
+        var projetoId = new ProjetoId(Guid.NewGuid());
+        var nome = "Nova Tarefa";
+        var descricao = "Descrição da tarefa";
+        var dataInicio = DateTime.UtcNow;
+        var dataFim = DateTime.UtcNow.AddDays(10);
+        var status = StatusTarefa.Pendente;
+        var prioridade = PrioridadeTarefa.Baixa;
+
+        // Act
+        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim, status, prioridade);
+
+        // Assert
+        Assert.Null(novaInstanciaTarefaResult.Value);
+        Assert.True(novaInstanciaTarefaResult.IsFailure);
+        Assert.Equal(TarefaErrors.IdTarefaNaoPodeSerVazio, novaInstanciaTarefaResult.Error);
+    }
+
+    [Fact]
+    public void Deve_Retornar_Erro_Quando_IdProjeto_Esta_Vazio()
+    {
+        // Arrange
+        var tarefaId = new TarefaId(Guid.NewGuid());
+        var projetoId = new ProjetoId(Guid.Empty);
+        var nome = "Nova Tarefa";
+        var descricao = "Descrição da tarefa";
+        var dataInicio = DateTime.UtcNow;
+        var dataFim = DateTime.UtcNow.AddDays(10);
+        var status = StatusTarefa.Pendente;
+        var prioridade = PrioridadeTarefa.Baixa;
+
+        // Act
+        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim, status, prioridade);
+
+        // Assert
+        Assert.Null(novaInstanciaTarefaResult.Value);
+        Assert.True(novaInstanciaTarefaResult.IsFailure);
+        Assert.Equal(ProjetoErrors.IdProjetoNaoPodeSerVazio, novaInstanciaTarefaResult.Error);
+    }
+
+    [Fact]
     public void Deve_Retornar_Erro_Quando_Nome_Esta_Vazio()
     {
         // Arrange

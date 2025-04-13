@@ -26,6 +26,46 @@ public class ProjetoTests
     }
 
     [Fact]
+    public void Deve_Retornar_Erro_Quando_Id_Esta_Vazio()
+    {
+        // Arrange
+        var projetoId = new ProjetoId(Guid.Empty);
+        var usuarioId = new UsuarioId(Guid.NewGuid());
+        var nome = "Novo Projeto";
+        var descricao = "Descrição do projeto";
+        var dataInicio = DateTime.UtcNow;
+        var dataFim = DateTime.UtcNow.AddDays(10);
+
+        // Act
+        var novaInstanciaProjetoResult = Projeto.Criar(projetoId, usuarioId, nome, descricao, dataInicio, dataFim);
+
+        // Assert
+        Assert.Null(novaInstanciaProjetoResult.Value);
+        Assert.True(novaInstanciaProjetoResult.IsFailure);
+        Assert.Equal(ProjetoErrors.IdProjetoNaoPodeSerVazio, novaInstanciaProjetoResult.Error);
+    }
+
+    [Fact]
+    public void Deve_Retornar_Erro_Quando_IdUsuario_Esta_Vazio()
+    {
+        // Arrange
+        var projetoId = new ProjetoId(Guid.NewGuid());
+        var usuarioId = new UsuarioId(Guid.Empty);
+        var nome = "Novo Projeto";
+        var descricao = "Descrição do projeto";
+        var dataInicio = DateTime.UtcNow;
+        var dataFim = DateTime.UtcNow.AddDays(10);
+
+        // Act
+        var novaInstanciaProjetoResult = Projeto.Criar(projetoId, usuarioId, nome, descricao, dataInicio, dataFim);
+
+        // Assert
+        Assert.Null(novaInstanciaProjetoResult.Value);
+        Assert.True(novaInstanciaProjetoResult.IsFailure);
+        Assert.Equal(UsuarioErrors.IdUsuarioNaoPodeSerVazio, novaInstanciaProjetoResult.Error);
+    }
+
+    [Fact]
     public void Deve_Retornar_Erro_Quando_Nome_Esta_Vazio()
     {
         // Arrange

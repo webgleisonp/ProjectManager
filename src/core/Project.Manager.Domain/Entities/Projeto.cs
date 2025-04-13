@@ -31,6 +31,12 @@ public class Projeto
 
     public static Result<Projeto> Criar(ProjetoId id, UsuarioId usuarioId, string nome, string descricao, DateTime dataInicio, DateTime dataFim)
     {
+        if(id.Value == Guid.Empty)
+            return Result.Failure<Projeto>(ProjetoErrors.IdProjetoNaoPodeSerVazio);
+
+        if(usuarioId.Value == Guid.Empty)
+            return Result.Failure<Projeto>(UsuarioErrors.IdUsuarioNaoPodeSerVazio);
+
         if (string.IsNullOrWhiteSpace(nome))
             return Result.Failure<Projeto>(ProjetoErrors.NomeProjetoNaoPodeSerVazio);
 
