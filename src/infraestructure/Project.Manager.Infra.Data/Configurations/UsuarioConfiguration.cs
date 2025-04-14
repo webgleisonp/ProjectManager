@@ -47,6 +47,11 @@ internal class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
                .HasForeignKey(p => p.UsuarioId)
                .OnDelete(DeleteBehavior.NoAction);
 
+        builder.HasMany(u => u.Tarefas)
+                .WithOne(t => t.Usuario)
+                .HasForeignKey(t => t.UsuarioId)
+                .OnDelete(DeleteBehavior.NoAction);
+
         builder.HasMany(u => u.Historico)
                 .WithOne(h => h.Usuario)
                 .HasForeignKey(h => h.UsuarioId)

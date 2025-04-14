@@ -54,6 +54,7 @@ namespace Project.Manager.Infra.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProjetoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UsuarioId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Nome = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
                     Descricao = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: false),
                     DataInicio = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -68,6 +69,11 @@ namespace Project.Manager.Infra.Data.Migrations
                         name: "FK_Tarefas_Projetos_ProjetoId",
                         column: x => x.ProjetoId,
                         principalTable: "Projetos",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Tarefas_Usuarios_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "Usuarios",
                         principalColumn: "Id");
                 });
 
@@ -116,6 +122,11 @@ namespace Project.Manager.Infra.Data.Migrations
                 name: "IX_Tarefas_ProjetoId",
                 table: "Tarefas",
                 column: "ProjetoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tarefas_UsuarioId",
+                table: "Tarefas",
+                column: "UsuarioId");
         }
 
         /// <inheritdoc />

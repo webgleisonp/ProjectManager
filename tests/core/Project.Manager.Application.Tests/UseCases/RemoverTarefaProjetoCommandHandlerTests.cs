@@ -31,11 +31,13 @@ public class RemoverTarefaProjetoCommandHandlerTests
         // Arrange
         var id = Guid.NewGuid();
         var projetoId = Guid.NewGuid();
+        var usuarioId = Guid.NewGuid();
 
         var command = new RemoverTarefaProjetoCommand(id);
 
         var tarefa = Tarefa.Criar(id.ToTarefaId(),
             projetoId.ToProjetoId(),
+            usuarioId.ToUsuarioId(),
             "Tarefa Teste",
             "Descrição da Tarefa Teste",
             DateTime.UtcNow,
@@ -81,11 +83,13 @@ public class RemoverTarefaProjetoCommandHandlerTests
         // Arrange
         var id = Guid.NewGuid();
         var projetoId = Guid.NewGuid();
+        var usuarioId = Guid.NewGuid();
 
         var command = new RemoverTarefaProjetoCommand(id);
 
         var tarefa = Tarefa.Criar(id.ToTarefaId(),
             projetoId.ToProjetoId(),
+            usuarioId.ToUsuarioId(),
             "Tarefa Teste",
             "Descrição da Tarefa Teste",
             DateTime.UtcNow,
@@ -112,11 +116,13 @@ public class RemoverTarefaProjetoCommandHandlerTests
         // Arrange
         var id = Guid.NewGuid();
         var projetoId = Guid.NewGuid();
+        var usuarioId = Guid.NewGuid();
 
         var command = new RemoverTarefaProjetoCommand(Guid.NewGuid());
 
         var tarefa = Tarefa.Criar(id.ToTarefaId(),
             projetoId.ToProjetoId(),
+            usuarioId.ToUsuarioId(),
             "Tarefa Teste",
             "Descrição da Tarefa Teste",
             DateTime.UtcNow,

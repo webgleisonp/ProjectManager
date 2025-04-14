@@ -33,13 +33,15 @@ public class IncluirTarefaProjetoCommandHandlerTests
     {
         // Arrange
         var id = Guid.NewGuid();
+        var usuarioId = Guid.NewGuid();
 
         var novoProjetoCriado = ProjetosFaker.GerarProjetosFakes().Generate();
 
-        var command = new IncluirTarefaProjetoCommand(novoProjetoCriado.Id.Value, 
-            "Tarefa Teste", 
-            "Descrição da Tarefa Teste", 
-            DateTime.UtcNow, 
+        var command = new IncluirTarefaProjetoCommand(novoProjetoCriado.Id.Value,
+            usuarioId,
+            "Tarefa Teste",
+            "Descrição da Tarefa Teste",
+            DateTime.UtcNow,
             DateTime.UtcNow.AddDays(5),
             PrioridadeTarefa.Baixa);
 
@@ -47,11 +49,12 @@ public class IncluirTarefaProjetoCommandHandlerTests
             .Returns(novoProjetoCriado);
 
         var novaTarefaCriada = Tarefa.Criar(id.ToTarefaId(),
-            novoProjetoCriado.Id, 
+            novoProjetoCriado.Id,
+            novoProjetoCriado.UsuarioId,
             command.Nome,
-            command.Descricao, 
-            command.DataInicio, 
-            command.DataFim, 
+            command.Descricao,
+            command.DataInicio,
+            command.DataFim,
             StatusTarefa.Pendente,
             command.Prioridade).Value;
 
@@ -74,14 +77,16 @@ public class IncluirTarefaProjetoCommandHandlerTests
     {
         // Arrange
         var id = Guid.NewGuid();
+        var usuarioId = Guid.NewGuid();
 
         var novoProjetoCriado = ProjetosFaker.GerarProjetosFakes().Generate();
 
-        var command = new IncluirTarefaProjetoCommand(novoProjetoCriado.Id.Value, 
-            "", 
-            "Descrição da Tarefa Teste", 
-            DateTime.UtcNow, 
-            DateTime.UtcNow.AddDays(5), 
+        var command = new IncluirTarefaProjetoCommand(novoProjetoCriado.Id.Value,
+            usuarioId,
+            "",
+            "Descrição da Tarefa Teste",
+            DateTime.UtcNow,
+            DateTime.UtcNow.AddDays(5),
             PrioridadeTarefa.Baixa);
 
         _projetoRepositoryMock.RetornarProjetoAsync(Arg.Is<ProjetoId>(p => p == novoProjetoCriado.Id), Arg.Any<CancellationToken>())
@@ -100,13 +105,15 @@ public class IncluirTarefaProjetoCommandHandlerTests
     public async void Deve_Retornar_Erro_Quando_Projeto_Nao_Encontrado()
     {
         var id = Guid.NewGuid();
+        var usuarioId = Guid.NewGuid();
 
         var novoProjetoCriado = ProjetosFaker.GerarProjetosFakes().Generate();
 
-        var command = new IncluirTarefaProjetoCommand(novoProjetoCriado.Id.Value, 
-            "Tarefa Teste", 
-            "Descrição da Tarefa Teste", 
-            DateTime.UtcNow, 
+        var command = new IncluirTarefaProjetoCommand(novoProjetoCriado.Id.Value,
+            usuarioId,
+            "Tarefa Teste",
+            "Descrição da Tarefa Teste",
+            DateTime.UtcNow,
             DateTime.UtcNow.AddDays(5),
             PrioridadeTarefa.Baixa);
 
@@ -127,26 +134,28 @@ public class IncluirTarefaProjetoCommandHandlerTests
     public async void Deve_Retornar_Erro_Quando_Limite_Tarefas_Por_Projeto_For_Atingido()
     {
         var id = Guid.NewGuid();
+        var usuarioId = Guid.NewGuid();
 
         var novoProjetoCriado = ProjetosFaker.GerarProjetosFakes().Generate();
 
-        var command = new IncluirTarefaProjetoCommand(novoProjetoCriado.Id.Value, 
-            "Tarefa Teste", 
-            "Descrição da Tarefa Teste", 
-            DateTime.UtcNow, 
-            DateTime.UtcNow.AddDays(5), 
+        var command = new IncluirTarefaProjetoCommand(novoProjetoCriado.Id.Value,
+            usuarioId,
+            "Tarefa Teste",
+            "Descrição da Tarefa Teste",
+            DateTime.UtcNow,
+            DateTime.UtcNow.AddDays(5),
             PrioridadeTarefa.Baixa);
 
         _projetoRepositoryMock.RetornarProjetoAsync(Arg.Is<ProjetoId>(p => p == novoProjetoCriado.Id), Arg.Any<CancellationToken>())
             .Returns(novoProjetoCriado);
-        
+
         var tarefas = TarefasFaker.GerarTarefasFakes(novoProjetoCriado.Id.Value).Generate(20);
 
         foreach (var tarefa in tarefas)
         {
             novoProjetoCriado.AddTarefa(tarefa);
         }
-        
+
         // Adicione mais tarefas até atingir o limite de 20
         // Act
         var result = await _incluirTarefaProjetoCommandHandler.HandleAsync(command);
@@ -162,16 +171,18 @@ public class IncluirTarefaProjetoCommandHandlerTests
     public void Deve_Lancar_Exception_Quando_Adicionar_Tarefa_Via_Repositorio()
     {
         var id = Guid.NewGuid();
+        var usuarioId = Guid.NewGuid();
 
         var novoProjetoCriado = ProjetosFaker.GerarProjetosFakes().Generate();
 
-        var command = new IncluirTarefaProjetoCommand(novoProjetoCriado.Id.Value, 
-            "Tarefa Teste", 
-            "Descrição da Tarefa Teste", 
-            DateTime.UtcNow, 
-            DateTime.UtcNow.AddDays(5), 
+        var command = new IncluirTarefaProjetoCommand(novoProjetoCriado.Id.Value,
+            usuarioId,
+            "Tarefa Teste",
+            "Descrição da Tarefa Teste",
+            DateTime.UtcNow,
+            DateTime.UtcNow.AddDays(5),
             PrioridadeTarefa.Baixa);
-        
+
         _projetoRepositoryMock.RetornarProjetoAsync(Arg.Is<ProjetoId>(p => p == novoProjetoCriado.Id), Arg.Any<CancellationToken>())
             .Returns(novoProjetoCriado);
 
@@ -186,16 +197,18 @@ public class IncluirTarefaProjetoCommandHandlerTests
     public void Deve_Lancar_Exception_Quando_Executar_SaveChanges()
     {
         var id = Guid.NewGuid();
+        var usuarioId = Guid.NewGuid();
 
         var novoProjetoCriado = ProjetosFaker.GerarProjetosFakes().Generate();
 
-        var command = new IncluirTarefaProjetoCommand(novoProjetoCriado.Id.Value, 
-            "Tarefa Teste", 
-            "Descrição da Tarefa Teste", 
-            DateTime.UtcNow, 
+        var command = new IncluirTarefaProjetoCommand(novoProjetoCriado.Id.Value,
+            usuarioId,
+            "Tarefa Teste",
+            "Descrição da Tarefa Teste",
+            DateTime.UtcNow,
             DateTime.UtcNow.AddDays(5),
             PrioridadeTarefa.Baixa);
-                
+
         _projetoRepositoryMock.RetornarProjetoAsync(Arg.Is<ProjetoId>(p => p == novoProjetoCriado.Id), Arg.Any<CancellationToken>())
             .Returns(novoProjetoCriado);
 

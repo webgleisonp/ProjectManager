@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Project.Manager.Application.Abstractions;
+using Project.Manager.Application.UseCases.Comentarios;
 using Project.Manager.Application.UseCases.Tarefas;
 using Project.Manager.Domain.Errors;
 using Project.Manager.WebApi.Endpoints.Abastractions;
@@ -16,6 +17,14 @@ internal sealed class MapEndpointTarefas : IEndpointMap
         app.MapPost("tarefas", IncluirTarefaProjetoAsync)
             .Produces<IncluirTarefaProjetoResponse>(StatusCodes.Status201Created)
             .Produces<IncluirTarefaProjetoResponse>(StatusCodes.Status400BadRequest)
+            .Produces(StatusCodes.Status500InternalServerError)
+            .WithTags("Tarefas")
+            .MapToApiVersion(1);
+
+        app.MapPost("tarefas/{id}/comentarios", IncluirComentarioTarefaAsync)
+            .Produces<IncluirComentarioTarefaResponse>(StatusCodes.Status200OK)
+            .Produces(404)
+            .Produces<IncluirComentarioTarefaResponse>(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status500InternalServerError)
             .WithTags("Tarefas")
             .MapToApiVersion(1);
@@ -42,6 +51,7 @@ internal sealed class MapEndpointTarefas : IEndpointMap
         CancellationToken cancellationToken)
     {
         var command = new IncluirTarefaProjetoCommand(request.ProjetoId,
+            request.UsuarioId,
             request.Nome,
             request.Descricao,
             request.DataInicio.ToDateTime(TimeOnly.MinValue),
@@ -56,6 +66,25 @@ internal sealed class MapEndpointTarefas : IEndpointMap
         return Results.BadRequest(result.Error);
     }
 
+    public async Task<IResult> IncluirComentarioTarefaAsync(
+        [FromRoute] Guid id,
+        [FromBody] IncluirComentarioTarefaRequest request,
+        [FromServices] ICommandHandler<IncluirComentarioTarefaCommand, IncluirComentarioTarefaResponse> handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new IncluirComentarioTarefaCommand(id, request.UsuarioId, request.Comentario);
+
+        var result = await handler.HandleAsync(command, cancellationToken);
+
+        if (result.IsFailure && result.Error == TarefaErrors.TarefaNaoEncontrada)
+            return Results.NotFound(result.Error);
+
+        if (result.IsSuccess)
+            return Results.Ok(result.Value);
+
+        return Results.BadRequest(result.Error);
+    }
+
     public async Task<IResult> AtualizarTarefaProjetoAsync(
         [FromRoute] Guid id,
         [FromBody] AtualizarTarefaProjetoRequest request,
@@ -63,6 +92,7 @@ internal sealed class MapEndpointTarefas : IEndpointMap
         CancellationToken cancellationToken)
     {
         var command = new AtualizarTarefaProjetoCommand(id,
+            request.UsuarioId,
             request.Nome,
             request.Descricao,
             request.DataInicio.ToDateTime(TimeOnly.MinValue),

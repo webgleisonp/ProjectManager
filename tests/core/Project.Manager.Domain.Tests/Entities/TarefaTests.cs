@@ -13,6 +13,7 @@ public class TarefaTests
         // Arrange
         var tarefaId = new TarefaId(Guid.NewGuid());
         var projetoId = new ProjetoId(Guid.NewGuid());
+        var usuarioId = new UsuarioId(Guid.NewGuid());
         var nome = "Nova Tarefa";
         var descricao = "Descrição da tarefa";
         var dataInicio = DateTime.UtcNow;
@@ -21,7 +22,7 @@ public class TarefaTests
         var prioridade = PrioridadeTarefa.Baixa;
 
         // Act
-        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim, status, prioridade);
+        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, usuarioId, nome, descricao, dataInicio, dataFim, status, prioridade);
 
         // Assert
         Assert.NotNull(novaInstanciaTarefaResult.Value);
@@ -35,6 +36,7 @@ public class TarefaTests
         // Arrange
         var tarefaId = new TarefaId(Guid.Empty);
         var projetoId = new ProjetoId(Guid.NewGuid());
+        var usuarioId = new UsuarioId(Guid.NewGuid());
         var nome = "Nova Tarefa";
         var descricao = "Descrição da tarefa";
         var dataInicio = DateTime.UtcNow;
@@ -43,7 +45,7 @@ public class TarefaTests
         var prioridade = PrioridadeTarefa.Baixa;
 
         // Act
-        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim, status, prioridade);
+        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, usuarioId, nome, descricao, dataInicio, dataFim, status, prioridade);
 
         // Assert
         Assert.Null(novaInstanciaTarefaResult.Value);
@@ -57,6 +59,7 @@ public class TarefaTests
         // Arrange
         var tarefaId = new TarefaId(Guid.NewGuid());
         var projetoId = new ProjetoId(Guid.Empty);
+        var usuarioId = new UsuarioId(Guid.NewGuid());
         var nome = "Nova Tarefa";
         var descricao = "Descrição da tarefa";
         var dataInicio = DateTime.UtcNow;
@@ -65,7 +68,7 @@ public class TarefaTests
         var prioridade = PrioridadeTarefa.Baixa;
 
         // Act
-        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim, status, prioridade);
+        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, usuarioId, nome, descricao, dataInicio, dataFim, status, prioridade);
 
         // Assert
         Assert.Null(novaInstanciaTarefaResult.Value);
@@ -79,6 +82,7 @@ public class TarefaTests
         // Arrange
         var tarefaId = new TarefaId(Guid.NewGuid());
         var projetoId = new ProjetoId(Guid.NewGuid());
+        var usuarioId = new UsuarioId(Guid.NewGuid());
         var nome = "";
         var descricao = "Descrição da tarefa";
         var dataInicio = DateTime.UtcNow;
@@ -87,7 +91,7 @@ public class TarefaTests
         var prioridade = PrioridadeTarefa.Baixa;
 
         // Act
-        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim, status, prioridade);
+        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, usuarioId, nome, descricao, dataInicio, dataFim, status, prioridade);
 
         // Assert
         Assert.Null(novaInstanciaTarefaResult.Value);
@@ -101,6 +105,7 @@ public class TarefaTests
         // Arrange
         var tarefaId = new TarefaId(Guid.NewGuid());
         var projetoId = new ProjetoId(Guid.NewGuid());
+        var usuarioId = new UsuarioId(Guid.NewGuid());
         var nome = "Nova Tarefa";
         var descricao = "";
         var dataInicio = DateTime.UtcNow;
@@ -109,7 +114,7 @@ public class TarefaTests
         var prioridade = PrioridadeTarefa.Baixa;
 
         // Act
-        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim, status, prioridade);
+        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, usuarioId, nome, descricao, dataInicio, dataFim, status, prioridade);
 
         // Assert
         Assert.Null(novaInstanciaTarefaResult.Value);
@@ -123,6 +128,7 @@ public class TarefaTests
         // Arrange
         var tarefaId = new TarefaId(Guid.NewGuid());
         var projetoId = new ProjetoId(Guid.NewGuid());
+        var usuarioId = new UsuarioId(Guid.NewGuid());
         var nome = "Nova Tarefa";
         var descricao = "Descrição da tarefa";
         var dataInicio = DateTime.UtcNow;
@@ -131,7 +137,7 @@ public class TarefaTests
         var prioridade = PrioridadeTarefa.Baixa;
 
         // Act
-        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, nome, descricao, dataInicio, dataFim, status, prioridade);
+        var novaInstanciaTarefaResult = Tarefa.Criar(tarefaId, projetoId, usuarioId, nome, descricao, dataInicio, dataFim, status, prioridade);
 
         // Assert
         Assert.Null(novaInstanciaTarefaResult.Value);

@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using Project.Manager.Domain.Errors;
+﻿using Project.Manager.Domain.Errors;
 using Project.Manager.Domain.Shared;
 using Project.Manager.Domain.ValueObjects.Enums;
 using Project.Manager.Domain.ValueObjects.Identities;
@@ -27,9 +26,9 @@ public class Historico
     public string Descricao { get; init; } = null!;
     public DateTime DataCriacao { get; init; }
 
-    public virtual Tarefa Tarefa { get; init; } = null!;
+    public virtual Tarefa Tarefa { get; private set; } = null!;
 
-    public virtual Usuario Usuario { get; init; } = null!;
+    public virtual Usuario Usuario { get; private set; } = null!;
 
     public static Result<Historico> CriarAtualizacao(HistoricoId id, TarefaId tarefaId, UsuarioId usuarioId, string descricao)
     {
@@ -63,5 +62,25 @@ public class Historico
             return Result.Failure<Historico>(HistoricoErrors.DescricaoHistoricoNaoPodeSerVazia);
 
         return new Historico(id, tarefaId, usuarioId, TipoHistorico.Comentario, descricao, DateTime.UtcNow)!;
+    }
+
+    public Result SetTarefa(Tarefa tarefa)
+    {
+        if (tarefa is null)
+            return Result.Failure(TarefaErrors.TarefaNaoPodeSerNula);
+
+        Tarefa = tarefa;
+
+        return Result.Success();
+    }
+
+    public Result SetUsuario(Usuario usuario)
+    {
+        if (usuario is null)
+            return Result.Failure(UsuarioErrors.UsuarioNaoPodeSerNulo);
+
+        Usuario = usuario;
+
+        return Result.Success();
     }
 }

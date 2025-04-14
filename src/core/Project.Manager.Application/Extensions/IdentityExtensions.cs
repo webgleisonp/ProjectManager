@@ -27,4 +27,12 @@ public static class IdentityExtensions
 
         return new TarefaId(id);
     }
+
+    public static HistoricoId ToHistorioId(this Guid id)
+    {
+        if (id == Guid.Empty)
+            throw new ArgumentException("O id não pode ser vazio.", nameof(id));
+
+        return new HistoricoId(id);
+    }
 }

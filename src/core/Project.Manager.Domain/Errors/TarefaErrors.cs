@@ -9,4 +9,5 @@ public static class TarefaErrors
     public static readonly Error NenhumaTarefaEncontradaParaProjetoInformado = new("Tarefa.NenhumaTarefaEncontradaParaProjetoInformado", "Nenhuma tarefa encontrada para o projeto informado.");
     public static readonly Error TarefaNaoEncontrada = new("Tarefa.TarefaNaoEncontrada", "Tarefa não encontrada");
     public static readonly Error TarefaJaIniciada = new("Tarefa.TarefaJaIniciada", "Tarefa já iniciada");
+    public static readonly Error TarefaNaoPodeSerNula = new("Tarefa.TarefaNaoPodeSerNula", "Tarefa não pode ser nula");
 }

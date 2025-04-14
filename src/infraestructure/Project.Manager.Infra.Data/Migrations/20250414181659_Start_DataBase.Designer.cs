@@ -12,7 +12,7 @@ using Project.Manager.Infra.Data;
 namespace Project.Manager.Infra.Data.Migrations
 {
     [DbContext(typeof(SqlServerDbContext))]
-    [Migration("20250413223836_Start_DataBase")]
+    [Migration("20250414181659_Start_DataBase")]
     partial class Start_DataBase
     {
         /// <inheritdoc />
@@ -120,9 +120,14 @@ namespace Project.Manager.Infra.Data.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ProjetoId");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Tarefas", (string)null);
                 });
@@ -148,7 +153,7 @@ namespace Project.Manager.Infra.Data.Migrations
             modelBuilder.Entity("Project.Manager.Domain.Entities.Historico", b =>
                 {
                     b.HasOne("Project.Manager.Domain.Entities.Tarefa", "Tarefa")
-                        .WithMany("Historico")
+                        .WithMany("HistoricoEventos")
                         .HasForeignKey("TarefaId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -183,7 +188,15 @@ namespace Project.Manager.Infra.Data.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("Project.Manager.Domain.Entities.Usuario", "Usuario")
+                        .WithMany("Tarefas")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("Projeto");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("Project.Manager.Domain.Entities.Usuario", b =>
@@ -240,7 +253,7 @@ namespace Project.Manager.Infra.Data.Migrations
 
             modelBuilder.Entity("Project.Manager.Domain.Entities.Tarefa", b =>
                 {
-                    b.Navigation("Historico");
+                    b.Navigation("HistoricoEventos");
                 });
 
             modelBuilder.Entity("Project.Manager.Domain.Entities.Usuario", b =>
@@ -248,6 +261,8 @@ namespace Project.Manager.Infra.Data.Migrations
                     b.Navigation("Historico");
 
                     b.Navigation("Projetos");
+
+                    b.Navigation("Tarefas");
                 });
 #pragma warning restore 612, 618
         }

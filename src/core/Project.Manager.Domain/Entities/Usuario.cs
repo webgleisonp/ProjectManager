@@ -27,6 +27,8 @@ public class Usuario
 
     public virtual ICollection<Historico> Historico { get; } = [];
 
+    public virtual ICollection<Tarefa> Tarefas { get; } = [];
+
     public static Result<Usuario> Criar(UsuarioId id, string nome, string email, string senha, string confirmarSenha)
     {
         if (id.Value == Guid.Empty)

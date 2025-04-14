@@ -24,7 +24,7 @@ internal sealed class IncluirTarefaProjetoCommandHandler(IProjetoRepository proj
 
         var id = Guid.NewGuid();
 
-        var tarefaResult = Tarefa.Criar(id.ToTarefaId(), projeto.Id, command.Nome, command.Descricao, command.DataInicio, command.DataFim, StatusTarefa.Pendente, command.Prioridade);
+        var tarefaResult = Tarefa.Criar(id.ToTarefaId(), projeto.Id, command.UsuarioId.ToUsuarioId(), command.Nome, command.Descricao, command.DataInicio, command.DataFim, StatusTarefa.Pendente, command.Prioridade);
 
         if (tarefaResult.IsFailure)
             return Result.Failure<IncluirTarefaProjetoResponse>(tarefaResult.Error);

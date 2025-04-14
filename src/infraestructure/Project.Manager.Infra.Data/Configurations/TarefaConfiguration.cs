@@ -24,6 +24,11 @@ internal class TarefaConfiguration : IEntityTypeConfiguration<Tarefa>
                 id => id.Value,
                 value => new ProjetoId(value));
 
+        builder.Property(x => x.UsuarioId)
+            .HasConversion(
+                id => id.Value,
+                value => new UsuarioId(value));
+
         builder.Property(x => x.Nome)
             .IsRequired()
             .HasMaxLength(100);
@@ -51,7 +56,12 @@ internal class TarefaConfiguration : IEntityTypeConfiguration<Tarefa>
                .HasForeignKey(t => t.ProjetoId)
                .OnDelete(DeleteBehavior.NoAction);
 
-        builder.HasMany(x => x.Historico)
+        builder.HasOne(t => t.Usuario)
+                .WithMany(u => u.Tarefas)
+                .HasForeignKey(t => t.UsuarioId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasMany(x => x.HistoricoEventos)
             .WithOne(x => x.Tarefa)
             .HasForeignKey(x => x.TarefaId)
             .OnDelete(DeleteBehavior.NoAction);

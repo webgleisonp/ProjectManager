@@ -12,6 +12,22 @@ services:
     networks:
       - local-docker-network
 
+  api:
+    container_name: project_manager-api
+    build:
+      context: .
+      dockerfile: src/presentation/Project.Manager.WebApi/Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - SQL_SERVER_CONNECTION_STRING=Server=db_sqlserver;Database=ProjectManager;User Id=SA;Password=docker@sql01;TrustServerCertificate=True;Encrypt=False;
+    depends_on:
+      - db_sqlserver
+    networks:
+      - local-docker-network
+      
 networks:
   local-docker-network:
     name: local-docker-network

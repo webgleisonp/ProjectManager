@@ -28,6 +28,13 @@ internal sealed class MapEndpointProjetos : IEndpointMap
             .Produces(StatusCodes.Status500InternalServerError)
             .WithTags("Projetos")
             .MapToApiVersion(1);
+
+        app.MapDelete("projetos/{id}", ExcluirProjetoAsync)
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status500InternalServerError)
+            .WithTags("Projetos")
+            .MapToApiVersion(1);
     }
 
     private static async Task<IResult> RetornarTarefasProjetoAsync(
@@ -66,6 +73,24 @@ internal sealed class MapEndpointProjetos : IEndpointMap
 
         if (result.IsSuccess)
             return Results.Created("/projetos", result.Value);
+
+        return Results.BadRequest(result.Error);
+    }
+
+    public async Task<IResult> ExcluirProjetoAsync(
+        [FromRoute] Guid id,
+        [FromServices] ICommandHandler<ExcluirProjetoCommand> handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new ExcluirProjetoCommand(id);
+
+        var result = await handler.HandleAsync(command, cancellationToken);
+
+        if (result.IsFailure && result.Error == ProjetoErrors.ProjetoNaoEncontrado)
+            return Results.NotFound(result.Error);
+
+        if (result.IsSuccess)
+            return Results.NoContent();
 
         return Results.BadRequest(result.Error);
     }

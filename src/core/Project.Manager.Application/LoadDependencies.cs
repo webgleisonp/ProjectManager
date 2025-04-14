@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Project.Manager.Application.Abstractions;
+using Project.Manager.Application.UseCases.Comentarios;
 using Project.Manager.Application.UseCases.Projetos;
 using Project.Manager.Application.UseCases.Tarefas;
 using Project.Manager.Application.UseCases.Usuarios;
@@ -17,6 +18,8 @@ public static class LoadDependencies
         services.AddScoped<ICommandHandler<IncluirTarefaProjetoCommand, IncluirTarefaProjetoResponse>, IncluirTarefaProjetoCommandHandler>();
         services.AddScoped<ICommandHandler<AtualizarTarefaProjetoCommand, AtualizarTarefaProjetoResponse>, AtualizarTarefaProjetoCommandHandler>();
         services.AddScoped<ICommandHandler<RemoverTarefaProjetoCommand>, RemoverTarefaProjetoCommandHandler>();
+        services.AddScoped<ICommandHandler<ExcluirProjetoCommand>, ExcluirProjetoCommandHandler>();
+        services.AddScoped<ICommandHandler<IncluirComentarioTarefaCommand, IncluirComentarioTarefaResponse>, IncluirComentarioTarefaCommandHandler>();
 
         return services;
     }

@@ -13,12 +13,13 @@ public static class LoadDependencies
     {
         services.AddDbContext<SqlServerDbContext>(options =>
         {
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+            options.UseSqlServer(configuration["SQL_SERVER_CONNECTION_STRING"]);
         });
 
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
         services.AddScoped<IProjetoRepository, ProjetoRepository>();
         services.AddScoped<ITarefaRepository, TarefaRepository>();
+        services.AddScoped<IHistoricoRepository, HistoricoRepository>();
 
         services.AddScoped<IUnityOfWork, UnityOfWork>();
 

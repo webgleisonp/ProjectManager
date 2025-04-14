@@ -2,7 +2,7 @@
 
 namespace Project.Manager.Application.UseCases.Tarefas;
 
-public sealed record AtualizarTarefaProjetoRequest(
+public sealed record AtualizarTarefaProjetoRequest(Guid UsuarioId,
     string Nome,
     string Descricao,
     DateOnly DataInicio,

@@ -2,6 +2,6 @@
 
 public enum TipoHistorico
 {
-    Atualizacao,
-    Comentario
+    Atualizacao = 1,
+    Comentario = 2
 }

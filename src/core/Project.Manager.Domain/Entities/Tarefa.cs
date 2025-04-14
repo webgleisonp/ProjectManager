@@ -9,10 +9,11 @@ public class Tarefa
 {
     private Tarefa() { }
 
-    private Tarefa(TarefaId id, ProjetoId projetoId, string nome, string descricao, DateTime dataInicio, DateTime dataFim, StatusTarefa status, PrioridadeTarefa prioridade)
+    private Tarefa(TarefaId id, ProjetoId projetoId, UsuarioId usuarioId, string nome, string descricao, DateTime dataInicio, DateTime dataFim, StatusTarefa status, PrioridadeTarefa prioridade)
     {
         Id = id;
         ProjetoId = projetoId;
+        UsuarioId = usuarioId;
         Nome = nome;
         Descricao = descricao;
         DataInicio = dataInicio;
@@ -23,6 +24,7 @@ public class Tarefa
 
     public TarefaId Id { get; init; } = null!;
     public ProjetoId ProjetoId { get; private set; } = null!;
+    public UsuarioId UsuarioId { get; private set; } = null!;
     public string Nome { get; private set; } = null!;
     public string Descricao { get; private set; } = null!;
     public DateTime DataInicio { get; private set; }
@@ -32,15 +34,20 @@ public class Tarefa
 
     public virtual Projeto Projeto { get; private set; } = null!;
 
-    public virtual ICollection<Historico> Historico { get; } = [];
+    public virtual Usuario Usuario { get; private set; } = null!;
 
-    public static Result<Tarefa> Criar(TarefaId id, ProjetoId projetoId, string nome, string descricao, DateTime dataInicio, DateTime dataFim, StatusTarefa status, PrioridadeTarefa prioridade)
+    public virtual ICollection<Historico> HistoricoEventos { get; } = [];
+
+    public static Result<Tarefa> Criar(TarefaId id, ProjetoId projetoId, UsuarioId usuarioId, string nome, string descricao, DateTime dataInicio, DateTime dataFim, StatusTarefa status, PrioridadeTarefa prioridade)
     {
-        if(id.Value == Guid.Empty)
+        if (id.Value == Guid.Empty)
             return Result.Failure<Tarefa>(TarefaErrors.IdTarefaNaoPodeSerVazio);
 
         if (projetoId.Value == Guid.Empty)
             return Result.Failure<Tarefa>(ProjetoErrors.IdProjetoNaoPodeSerVazio);
+
+        if (usuarioId.Value == Guid.Empty)
+            return Result.Failure<Tarefa>(UsuarioErrors.IdUsuarioNaoPodeSerVazio);
 
         if (string.IsNullOrWhiteSpace(nome))
             return Result.Failure<Tarefa>(TarefaErrors.NomeTarefaNaoPodeSerVazio);
@@ -51,59 +58,91 @@ public class Tarefa
         if (dataInicio >= dataFim)
             return Result.Failure<Tarefa>(TarefaErrors.DataInicioDeveSerMenorQueDataFim);
 
-        return new Tarefa(id, projetoId, nome, descricao, dataInicio, dataFim, status, prioridade)!;
+        return new Tarefa(id, projetoId, usuarioId, nome, descricao, dataInicio, dataFim, status, prioridade)!;
     }
 
     public Result SetNome(string nome)
     {
-        if (string.IsNullOrWhiteSpace(nome))
-            return Result.Failure(TarefaErrors.NomeTarefaNaoPodeSerVazio);
+        if (Nome != nome && !string.IsNullOrWhiteSpace(nome))
+        {
+            Nome = nome;
 
-        Nome = nome;
+            var historico = Historico.CriarAtualizacao(new HistoricoId(Guid.NewGuid()), Id, UsuarioId, $"Nome alterado de '{Nome}' para '{nome}'");
+
+            if (historico.IsFailure)
+                return Result.Failure(historico.Error);
+
+            HistoricoEventos.Add(historico.Value);
+        }
 
         return Result.Success();
     }
 
     public Result SetDescricao(string descricao)
     {
-        if (string.IsNullOrWhiteSpace(descricao))
-            return Result.Failure(TarefaErrors.DescricaoTarefaNaoPodeSerVazia);
+        if (Descricao != descricao && !string.IsNullOrWhiteSpace(descricao))
+        {
+            Descricao = descricao;
 
-        Descricao = descricao;
+            var historico = Historico.CriarAtualizacao(new HistoricoId(Guid.NewGuid()), Id, UsuarioId, $"Descrição alterada de '{Descricao}' para '{descricao}'");
+
+            if (historico.IsFailure)
+                return Result.Failure(historico.Error);
+        }
 
         return Result.Success();
     }
 
     public Result SetDataInicio(DateTime dataInicio)
     {
-        if (dataInicio >= DataFim)
-            return Result.Failure(TarefaErrors.DataInicioDeveSerMenorQueDataFim);
+        if (DataInicio != dataInicio && dataInicio != DateTime.MinValue)
+        {
+            if (dataInicio >= DataFim)
+                return Result.Failure(TarefaErrors.DataInicioDeveSerMenorQueDataFim);
 
-        DataInicio = dataInicio;
+            DataInicio = dataInicio;
+
+            var historico = Historico.CriarAtualizacao(new HistoricoId(Guid.NewGuid()), Id, UsuarioId, $"Data Inicio alterada de '{DataInicio}' para '{dataInicio}'");
+
+            if (historico.IsFailure)
+                return Result.Failure(historico.Error);
+        }
 
         return Result.Success();
     }
 
     public Result SetDataFim(DateTime dataFim)
     {
-        if (DataInicio >= dataFim)
-            return Result.Failure(TarefaErrors.DataInicioDeveSerMenorQueDataFim);
+        if (DataFim != dataFim && dataFim != DateTime.MinValue)
+        {
+            if (DataInicio >= dataFim)
+                return Result.Failure(TarefaErrors.DataInicioDeveSerMenorQueDataFim);
 
-        DataFim = dataFim;
+            DataFim = dataFim;
+
+            var historico = Historico.CriarAtualizacao(new HistoricoId(Guid.NewGuid()), Id, UsuarioId, $"Data Fim alterada de '{DataFim}' para '{dataFim}'");
+
+            if (historico.IsFailure)
+                return Result.Failure(historico.Error);
+        }
 
         return Result.Success();
     }
 
     public Result SetStatus(StatusTarefa status)
     {
-        Status = status;
+        if (Status != status && Enum.IsDefined(typeof(StatusTarefa), status))
+        {
+            Status = status;
 
-        return Result.Success();
-    }
+            var statusAtual = Enum.GetName(typeof(StatusTarefa), Status);
+            var novoStatus = Enum.GetName(typeof(StatusTarefa), status);
 
-    public Result SetPrioridade(PrioridadeTarefa prioridade)
-    {
-        Prioridade = prioridade;
+            var historico = Historico.CriarAtualizacao(new HistoricoId(Guid.NewGuid()), Id, UsuarioId, $"Status alterado de '{statusAtual}' para '{novoStatus}'");
+
+            if (historico.IsFailure)
+                return Result.Failure(historico.Error);
+        }
 
         return Result.Success();
     }

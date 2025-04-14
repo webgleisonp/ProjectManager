@@ -41,7 +41,7 @@ internal class HistoricoConfiguration : IEntityTypeConfiguration<Historico>
             .IsRequired();
 
         builder.HasOne(x => x.Tarefa)
-            .WithMany(x => x.Historico)
+            .WithMany(x => x.HistoricoEventos)
             .HasForeignKey(x => x.TarefaId)
             .OnDelete(DeleteBehavior.NoAction);
     }

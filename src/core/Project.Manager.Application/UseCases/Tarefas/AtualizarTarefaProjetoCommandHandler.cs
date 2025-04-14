@@ -6,15 +6,20 @@ using Project.Manager.Domain.Shared;
 
 namespace Project.Manager.Application.UseCases.Tarefas;
 
-internal sealed class AtualizarTarefaProjetoCommandHandler(ITarefaRepository tarefaRepository, IUnityOfWork unityOfWork) : ICommandHandler<AtualizarTarefaProjetoCommand, AtualizarTarefaProjetoResponse>
+internal sealed class AtualizarTarefaProjetoCommandHandler(ITarefaRepository tarefaRepository, IUsuarioRepository usuarioRepository, IUnityOfWork unityOfWork) : ICommandHandler<AtualizarTarefaProjetoCommand, AtualizarTarefaProjetoResponse>
 {
     public async ValueTask<Result<AtualizarTarefaProjetoResponse>> HandleAsync(AtualizarTarefaProjetoCommand command, CancellationToken cancellationToken = default)
     {
+        var usuario = await usuarioRepository.RetornarUsuarioAsync(command.UsuarioId.ToUsuarioId(), cancellationToken);
+
+        if (usuario is null)
+            return Result.Failure<AtualizarTarefaProjetoResponse>(UsuarioErrors.UsuarioNaoEncontrado);
+
         var tarefa = await tarefaRepository.RetornarTarefaAsync(command.TarefaId.ToTarefaId(), cancellationToken);
 
         if (tarefa is null)
             return Result.Failure<AtualizarTarefaProjetoResponse>(TarefaErrors.TarefaNaoEncontrada);
-        
+
         var setNomeResult = tarefa.SetNome(command.Nome);
 
         if (setNomeResult.IsFailure)
