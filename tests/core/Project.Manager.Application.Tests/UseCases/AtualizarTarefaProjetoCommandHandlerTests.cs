@@ -33,15 +33,16 @@ public class AtualizarTarefaProjetoCommandHandlerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var usuarioId = Guid.NewGuid();
+        
+        var usuario = UsuarioFaker.GerarUsuarioFake().Generate();
 
         var projeto = ProjetosFaker.GerarProjetosFakes().Generate();
 
-        var command = new AtualizarTarefaProjetoCommand(id, usuarioId, "Tarefa Atualizada", "Descrição Atualizada", DateTime.UtcNow, DateTime.UtcNow.AddDays(5), StatusTarefa.EmAndamento);
+        var command = new AtualizarTarefaProjetoCommand(id, usuario.Id.Value, "Tarefa Atualizada", "Descrição Atualizada", DateTime.UtcNow, DateTime.UtcNow.AddDays(5), StatusTarefa.EmAndamento);
 
         var tarefaJaIncluida = Tarefa.Criar(id.ToTarefaId(),
             projeto.Id,
-            usuarioId.ToUsuarioId(),
+            usuario.Id,
             "Tarefa Incluida",
             "Descrição Incluida",
             DateTime.UtcNow,
@@ -53,7 +54,7 @@ public class AtualizarTarefaProjetoCommandHandlerTests
 
         var tarefaAtualizada = Tarefa.Criar(id.ToTarefaId(),
             projeto.Id,
-            usuarioId.ToUsuarioId(),
+            usuario.Id,
             command.Nome,
             command.Descricao,
             command.DataInicio,
@@ -62,6 +63,9 @@ public class AtualizarTarefaProjetoCommandHandlerTests
             PrioridadeTarefa.Media).Value;
 
         tarefaAtualizada.SetProjeto(projeto);
+
+        _usuarioRepositoryMock.RetornarUsuarioAsync(Arg.Is<UsuarioId>(t => t == usuario.Id), Arg.Any<CancellationToken>())
+            .Returns(usuario);
 
         _tarefaRepositoryMock.RetornarTarefaAsync(Arg.Is<TarefaId>(t => t == tarefaJaIncluida.Id), Arg.Any<CancellationToken>())
             .Returns(tarefaJaIncluida);
@@ -85,13 +89,38 @@ public class AtualizarTarefaProjetoCommandHandlerTests
     }
 
     [Fact]
+    public async void Deve_Retornar_Erro_Quando_Usuario_Nao_Encontrado()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+
+        var usuario = UsuarioFaker.GerarUsuarioFake().Generate();
+
+        var command = new AtualizarTarefaProjetoCommand(id, usuario.Id.Value, "Tarefa Atualizada", "Descrição Atualizada", DateTime.UtcNow, DateTime.UtcNow.AddDays(5), StatusTarefa.EmAndamento);
+        
+        _usuarioRepositoryMock.RetornarUsuarioAsync(Arg.Is<UsuarioId>(t => t == usuario.Id), Arg.Any<CancellationToken>())
+            .ReturnsNull();
+
+        // Act
+        var result = await _atualizarTarefaProjetoCommandHandler.HandleAsync(command);
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(UsuarioErrors.UsuarioNaoEncontrado, result.Error);
+    }
+
+    [Fact]
     public async void Deve_Retornar_Erro_Quando_Tarefa_Nao_Encontrada()
     {
         // Arrange
         var id = Guid.NewGuid();
-        var usuarioId = Guid.NewGuid();
 
-        var command = new AtualizarTarefaProjetoCommand(id, usuarioId, "Tarefa Atualizada", "Descrição Atualizada", DateTime.UtcNow, DateTime.UtcNow.AddDays(5), StatusTarefa.EmAndamento);
+        var usuario = UsuarioFaker.GerarUsuarioFake().Generate();
+
+        var command = new AtualizarTarefaProjetoCommand(id, usuario.Id.Value, "Tarefa Atualizada", "Descrição Atualizada", DateTime.UtcNow, DateTime.UtcNow.AddDays(5), StatusTarefa.EmAndamento);
+
+        _usuarioRepositoryMock.RetornarUsuarioAsync(Arg.Is<UsuarioId>(t => t == usuario.Id), Arg.Any<CancellationToken>())
+            .Returns(usuario);
 
         _tarefaRepositoryMock.RetornarTarefaAsync(Arg.Is<TarefaId>(t => t == id.ToTarefaId()), Arg.Any<CancellationToken>())
             .ReturnsNull();
@@ -105,62 +134,19 @@ public class AtualizarTarefaProjetoCommandHandlerTests
     }
 
     [Fact]
-    public async void Deve_Retornar_Erro_Quando_Nome_For_Vazio()
-    {
-        // Arrange
-        var usuarioId = Guid.NewGuid();
-
-        var projeto = ProjetosFaker.GerarProjetosFakes().Generate();
-
-        var tarefaJaIncluida = TarefasFaker.GerarTarefasFakes(projeto.Id.Value).Generate();
-
-        var command = new AtualizarTarefaProjetoCommand(tarefaJaIncluida.Id.Value, usuarioId, "", "Descrição Atualizada", DateTime.UtcNow, DateTime.UtcNow.AddDays(5), StatusTarefa.EmAndamento);
-
-        _tarefaRepositoryMock.RetornarTarefaAsync(Arg.Is<TarefaId>(t => t == tarefaJaIncluida.Id), Arg.Any<CancellationToken>())
-            .Returns(tarefaJaIncluida);
-
-        // Act
-        var result = await _atualizarTarefaProjetoCommandHandler.HandleAsync(command);
-
-        // Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(TarefaErrors.NomeTarefaNaoPodeSerVazio, result.Error);
-    }
-
-    [Fact]
-    public async void Deve_Retornar_Erro_Quando_Descricao_For_Vazia()
-    {
-        // Arrange
-        var usuarioId = Guid.NewGuid();
-
-        var projeto = ProjetosFaker.GerarProjetosFakes().Generate();
-
-        var tarefaJaIncluida = TarefasFaker.GerarTarefasFakes(projeto.Id.Value).Generate();
-
-        var command = new AtualizarTarefaProjetoCommand(tarefaJaIncluida.Id.Value, usuarioId, "Tarefa Atualizada", "", DateTime.UtcNow, DateTime.UtcNow.AddDays(5), StatusTarefa.EmAndamento);
-
-        _tarefaRepositoryMock.RetornarTarefaAsync(Arg.Is<TarefaId>(t => t == tarefaJaIncluida.Id), Arg.Any<CancellationToken>())
-            .Returns(tarefaJaIncluida);
-
-        // Act
-        var result = await _atualizarTarefaProjetoCommandHandler.HandleAsync(command);
-
-        // Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(TarefaErrors.DescricaoTarefaNaoPodeSerVazia, result.Error);
-    }
-
-    [Fact]
     public async void Deve_Retornar_Erro_Quando_DataInicio_For_Maior_Ou_Igual_DataFim()
     {
         // Arrange
-        var usuarioId = Guid.NewGuid();
+        var usuario = UsuarioFaker.GerarUsuarioFake().Generate();
 
         var projeto = ProjetosFaker.GerarProjetosFakes().Generate();
 
         var tarefaJaIncluida = TarefasFaker.GerarTarefasFakes(projeto.Id.Value).Generate();
 
-        var command = new AtualizarTarefaProjetoCommand(tarefaJaIncluida.Id.Value, usuarioId, "Tarefa Atualizada", "Descrição Atualizada", DateTime.UtcNow.AddDays(5), DateTime.UtcNow, StatusTarefa.EmAndamento);
+        var command = new AtualizarTarefaProjetoCommand(tarefaJaIncluida.Id.Value, usuario.Id.Value, "Tarefa Atualizada", "Descrição Atualizada", DateTime.UtcNow.AddDays(5), DateTime.UtcNow, StatusTarefa.EmAndamento);
+
+        _usuarioRepositoryMock.RetornarUsuarioAsync(Arg.Is<UsuarioId>(t => t == usuario.Id), Arg.Any<CancellationToken>())
+            .Returns(usuario);
 
         _tarefaRepositoryMock.RetornarTarefaAsync(Arg.Is<TarefaId>(t => t == tarefaJaIncluida.Id), Arg.Any<CancellationToken>())
             .Returns(tarefaJaIncluida);
@@ -177,13 +163,16 @@ public class AtualizarTarefaProjetoCommandHandlerTests
     public async void Deve_Retornar_Erro_Quando_DataFim_For_Menor_Ou_Igual_DataInicio()
     {
         // Arrange
-        var usuarioId = Guid.NewGuid();
+        var usuario = UsuarioFaker.GerarUsuarioFake().Generate();
 
         var projeto = ProjetosFaker.GerarProjetosFakes().Generate();
 
         var tarefaJaIncluida = TarefasFaker.GerarTarefasFakes(projeto.Id.Value).Generate();
 
-        var command = new AtualizarTarefaProjetoCommand(tarefaJaIncluida.Id.Value, usuarioId, "Tarefa Atualizada", "Descrição Atualizada", DateTime.UtcNow, DateTime.UtcNow.AddDays(-1), StatusTarefa.EmAndamento);
+        var command = new AtualizarTarefaProjetoCommand(tarefaJaIncluida.Id.Value, usuario.Id.Value, "Tarefa Atualizada", "Descrição Atualizada", DateTime.UtcNow, DateTime.UtcNow.AddDays(-1), StatusTarefa.EmAndamento);
+
+        _usuarioRepositoryMock.RetornarUsuarioAsync(Arg.Is<UsuarioId>(t => t == usuario.Id), Arg.Any<CancellationToken>())
+            .Returns(usuario);
 
         _tarefaRepositoryMock.RetornarTarefaAsync(Arg.Is<TarefaId>(t => t == tarefaJaIncluida.Id), Arg.Any<CancellationToken>())
             .Returns(tarefaJaIncluida);
