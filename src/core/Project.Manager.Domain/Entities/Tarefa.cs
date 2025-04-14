@@ -7,6 +7,8 @@ namespace Project.Manager.Domain.Entities;
 
 public class Tarefa
 {
+    private Tarefa() { }
+
     private Tarefa(TarefaId id, ProjetoId projetoId, string nome, string descricao, DateTime dataInicio, DateTime dataFim, StatusTarefa status, PrioridadeTarefa prioridade)
     {
         Id = id;
@@ -29,6 +31,8 @@ public class Tarefa
     public PrioridadeTarefa Prioridade { get; private set; }
 
     public virtual Projeto Projeto { get; private set; } = null!;
+
+    public virtual ICollection<Historico> Historico { get; } = [];
 
     public static Result<Tarefa> Criar(TarefaId id, ProjetoId projetoId, string nome, string descricao, DateTime dataInicio, DateTime dataFim, StatusTarefa status, PrioridadeTarefa prioridade)
     {

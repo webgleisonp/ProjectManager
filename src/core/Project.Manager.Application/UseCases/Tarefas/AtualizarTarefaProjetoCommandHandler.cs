@@ -3,29 +3,18 @@ using Project.Manager.Application.Extensions;
 using Project.Manager.Domain.Abstractions.Repositories;
 using Project.Manager.Domain.Errors;
 using Project.Manager.Domain.Shared;
-using Project.Manager.Domain.ValueObjects.Enums;
 
 namespace Project.Manager.Application.UseCases.Tarefas;
 
-public sealed record AtualizarTarefaProjetoResponse(Guid TarefaId, string Projeto, string Nome, string Descricao, DateTime DataInicio, DateTime DataFim, StatusTarefa Status, PrioridadeTarefa Prioridade);
-
-internal sealed class AtualizarTarefaProjetoCommandHandler(IProjetoRepository projetoRepository, ITarefaRepository tarefaRepository, IUnityOfWork unityOfWork) : ICommandHandler<AtualizarTarefaProjetoCommand, AtualizarTarefaProjetoResponse>
+internal sealed class AtualizarTarefaProjetoCommandHandler(ITarefaRepository tarefaRepository, IUnityOfWork unityOfWork) : ICommandHandler<AtualizarTarefaProjetoCommand, AtualizarTarefaProjetoResponse>
 {
     public async ValueTask<Result<AtualizarTarefaProjetoResponse>> HandleAsync(AtualizarTarefaProjetoCommand command, CancellationToken cancellationToken = default)
     {
-        var projeto = await projetoRepository.RetornarProjetoAsync(command.ProjetoId.ToProjetoId(), cancellationToken);
-
-        if (projeto is null)
-            return Result.Failure<AtualizarTarefaProjetoResponse>(ProjetoErrors.ProjetoNaoEncontrado);
-
-        if (projeto.Tarefas.Count >= 20)
-            return Result.Failure<AtualizarTarefaProjetoResponse>(ProjetoErrors.LimiteDeTarefasPorProjeto);
-
         var tarefa = await tarefaRepository.RetornarTarefaAsync(command.TarefaId.ToTarefaId(), cancellationToken);
 
         if (tarefa is null)
             return Result.Failure<AtualizarTarefaProjetoResponse>(TarefaErrors.TarefaNaoEncontrada);
-
+        
         var setNomeResult = tarefa.SetNome(command.Nome);
 
         if (setNomeResult.IsFailure)

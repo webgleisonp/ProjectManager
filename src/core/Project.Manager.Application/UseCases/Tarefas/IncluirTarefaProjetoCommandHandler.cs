@@ -8,7 +8,9 @@ using Project.Manager.Domain.ValueObjects.Enums;
 
 namespace Project.Manager.Application.UseCases.Tarefas;
 
-internal sealed class IncluirTarefaProjetoCommandHandler(IProjetoRepository projetoRepository, ITarefaRepository tarefaRepository, IUnityOfWork unityOfWork) : ICommandHandler<IncluirTarefaProjetoCommand, IncluirTarefaProjetoResponse>
+internal sealed class IncluirTarefaProjetoCommandHandler(IProjetoRepository projetoRepository, 
+    ITarefaRepository tarefaRepository, 
+    IUnityOfWork unityOfWork) : ICommandHandler<IncluirTarefaProjetoCommand, IncluirTarefaProjetoResponse>
 {
     public async ValueTask<Result<IncluirTarefaProjetoResponse>> HandleAsync(IncluirTarefaProjetoCommand command, CancellationToken cancellationToken = default)
     {

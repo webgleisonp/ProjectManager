@@ -6,6 +6,8 @@ namespace Project.Manager.Domain.Entities;
 
 public class Projeto
 {
+    private Projeto() { }
+
     private Projeto(ProjetoId id, UsuarioId usuarioId, string nome, string descricao, DateTime dataInicio, DateTime dataFim, bool ativo)
     {
         Id = id;

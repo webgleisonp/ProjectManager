@@ -6,6 +6,8 @@ using Project.Manager.Domain.ValueObjects.Identities;
 namespace Project.Manager.Domain.Entities;
 public class Usuario
 {
+    private Usuario() { }
+
     private Usuario(UsuarioId id, string nome, Email email, Senha senha, bool ativo)
     {
         Id = id;
@@ -22,6 +24,8 @@ public class Usuario
     public bool Ativo { get; init; }
 
     public virtual ICollection<Projeto> Projetos { get; } = [];
+
+    public virtual ICollection<Historico> Historico { get; } = [];
 
     public static Result<Usuario> Criar(UsuarioId id, string nome, string email, string senha, string confirmarSenha)
     {

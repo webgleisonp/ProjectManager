@@ -1,4 +1,5 @@
-﻿using Project.Manager.Domain.Errors;
+﻿using Microsoft.VisualBasic;
+using Project.Manager.Domain.Errors;
 using Project.Manager.Domain.Shared;
 using Project.Manager.Domain.ValueObjects.Enums;
 using Project.Manager.Domain.ValueObjects.Identities;
@@ -7,6 +8,8 @@ namespace Project.Manager.Domain.Entities;
 
 public class Historico
 {
+    private Historico() { }
+
     private Historico(HistoricoId id, TarefaId tarefaId, UsuarioId usuarioId, TipoHistorico tipo, string descricao, DateTime dataCriacao)
     {
         Id = id;
@@ -24,9 +27,13 @@ public class Historico
     public string Descricao { get; init; } = null!;
     public DateTime DataCriacao { get; init; }
 
+    public virtual Tarefa Tarefa { get; init; } = null!;
+
+    public virtual Usuario Usuario { get; init; } = null!;
+
     public static Result<Historico> CriarAtualizacao(HistoricoId id, TarefaId tarefaId, UsuarioId usuarioId, string descricao)
     {
-        if(id.Value == Guid.Empty)
+        if (id.Value == Guid.Empty)
             return Result.Failure<Historico>(HistoricoErrors.IdHistoricoNaoPodeSerVazio);
 
         if (tarefaId.Value == Guid.Empty)
